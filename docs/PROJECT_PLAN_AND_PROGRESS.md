@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 01:46:55 CST
+最后更新：2026-06-14 02:04:36 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -184,11 +184,12 @@ baseline + ablation：2–5 天
 - [2026-06-14 00:09:41 CST] Phase 6 第二传统模型 baseline 完成：新增本地 `scripts/model/baseline_xgboost_core_smoke.py`，一 trait 一个 XGBoost classifier，仅用当前 split 的 train-fold GWAS top SNP 作为输入特征；脚本检查 split/role 列、sample_index 边界和重复、trait_index 边界、label 范围、GWAS duplicate rows、p-value canonical 路径、shape、finite、范围 `[0,1]` 与超参边界，并输出 majority baseline 对照。TDD red 阶段确认新增前脚本不存在；初始 smoke 暴露 XGBoost 训练标签必须连续 `0..K-1`，已修复为训练时编码、预测后映射回原始 ordinal label 计算指标；`py_compile`、CPU smoke、`json.tool`、静态扫描、`git diff --check` 和独立代码复审均通过。正式 smoke（top_snps=512, n_estimators=40, 10 core traits）完成：mean accuracy `0.6274`、mean MAE `0.5662`、mean macro-F1 `0.3115`、majority accuracy `0.6028`；输出目录 `data/3krice/processed/xgboost_core_top512_e40/`（本地，不上传 GitHub）。对比：XGBoost accuracy 与 LightGBM `0.6271` 接近、macro-F1 略低于 LightGBM `0.3354`，但仍高于当前最佳神经模型 macro-F1 `0.2707`，说明传统 top-SNP tree baseline 仍是主要性能门槛。
 - [2026-06-14 01:25:03 CST] Cron 复核并推进 random graph 消融：`squeue -j 8562921` 已无活动记录，`sacct` 确认 Phase 5 model-input smoke 作业 `8562921` 为 `COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。随后在 `gpu10` 物理 GPU 0 上运行 random degree-matched graph 的短程消融（top_snp_count=512、trait_attention、genes=2048、hidden_dim=64、batch=16、5 epoch、30 steps/epoch、lr=2e-4，PyTorch `2.6.0+cu124`）：输出 `status=ok`、best epoch `5`、best/final val loss `0.4379`、accuracy `0.5456`、MAE `0.6334`、macro-F1 `0.2488`、Spearman `0.1957`；`training_manifest.json` 通过 `json.tool`，`checkpoint_best.pt`/`checkpoint_last.pt` 分别约 1.15 MB（本地数据区，不上传 GitHub）。短程结果低于真实 chromosome-neighbor graph + top512 trait_attention 的 15 epoch pilot（best val loss `0.3821`、macro-F1 `0.2707`），但 epoch 数不同，需后续对齐 15 epoch 后再作正式结论。
 - [2026-06-14 01:46:55 CST] Random graph 15 epoch 对齐复跑完成并发现关键方法学问题：在 `gpu10` 物理 GPU 0 上运行 random degree-matched graph + top512 + trait_attention（genes=2048、hidden_dim=64、batch=16、15 epoch、50 steps/epoch）输出 `status=ok`、best epoch `11`、best val loss `0.3820795923`、final val loss `0.3944686621`、accuracy `0.5624`、MAE `0.6106`、macro-F1 `0.2707`、Spearman `0.2205`，manifest/checkpoint 均验证通过。然而代码复核显示当前 `rice_geneformer_omtl_train.py` 只读取 `gene_nodes.tsv` 决定 gene 顺序，并未读取 `edge_index.npy`/`graph_edges.tsv` 参与 message passing；因此 random graph 与 chromosome-neighbor graph 在当前模型中不是有效图结构消融，指标近乎相同不能作为 graph 增益结论。下一步优先修复/新增真正使用 graph edges 的轻量 GraphEncoder 后再重做 random graph 对照。
+- [2026-06-14 02:04:36 CST] GraphEncoder 修复完成第一轮 smoke：在本地训练脚本中新增 `edge_index.npy` 读取与轻量 mean-neighbor GraphEncoder，模型前向现在在 gene transformer 后执行 message passing，并在 manifest 记录 `graph_edges_used`。验证：`py_compile`、`git diff --check`、静态扫描、独立代码审核均通过；CPU smoke 分别跑通 `chr_neighbor_k5`（32 genes, `graph_edges_used=290`）和 `random_degree_matched_k5`（32 genes, `graph_edges_used=2`）；随后在 `gpu10` 物理 GPU 0 上运行 chr graph GPU smoke（128 genes、top_snp_count=32、batch=4、1 epoch、2 step/epoch、PyTorch `2.6.0+cu124`），输出 `status=ok`、`cuda_available=true`、`graph_edges_used=1250`、best/final val loss `0.7391`、accuracy `0.4085`、macro-F1 `0.2173`，`training_manifest.json` 可解析且 `checkpoint_best.pt`/`checkpoint_last.pt` 分别约 126K/128K（本地数据区，不上传 GitHub）。注意：当前 bounded random induced subgraph 在小 `max_genes` 下边数很少，下一步重跑正式 random graph 对照前需先设计等节点/等边数的局部 random negative-control 或扩大可承受 gene 范围。
 
 ## 8. 下一步执行优先级
 
-1. 修复/新增真正使用 `edge_index.npy` 的轻量 GraphEncoder，并重跑 chr-neighbor vs random degree-matched graph 对照，避免把“gene 顺序消融”误当作图结构消融。
-2. 启动不同 `max_snps_per_gene` 消融，继续对齐 top512 + trait_attention 最佳配置。
+1. 为 GraphEncoder 设计等节点/等边数的局部 random negative-control（或扩大可承受 gene 范围），然后重跑 chr-neighbor vs random graph 对照，避免 induced random subgraph 过稀疏造成不公平比较。
+2. 启动不同 `max_snps_per_gene` 消融，继续对齐 top512 + trait_attention + GraphEncoder 配置。
 3. 增补 SNP-MLP baseline，作为 tree baseline 之外的纯神经 SNP 对照。
 4. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
 5. 后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
