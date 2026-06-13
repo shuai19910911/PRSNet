@@ -1,0 +1,39 @@
+# Large/local data
+/data/
+/results/
+/logs/
+/checkpoints/
+/PRSNet-2/
+
+# Model/data artifacts
+*.npy
+*.npz
+*.zarr
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.bed
+*.bim
+*.fam
+*.ped
+*.map
+*.vcf
+*.vcf.gz
+*.tar.gz
+*.zip
+*.xlsx
+*.tsv
+*.csv
+*.html
+
+# Python/cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# SLURM/logs
+slurm-*.out
+*.log
