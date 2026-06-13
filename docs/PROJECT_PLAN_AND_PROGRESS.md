@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 16:12:27 CST
+最后更新：2026-06-13 17:41:37 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -160,12 +160,12 @@ baseline + ablation：2–5 天
 - [2026-06-13 15:53:45 CST] 根据 phenotype trait summary 确认当前 3K Rice 表型主要是分类/有序等级 descriptor code；将建模目标调整为 ordinal / binary / nominal masked multi-task learning。
 - [2026-06-13 16:12:27 CST] 将正式模型体系重构为自研 RiceGeneFormer-OMTL：新增 VariantGate、GeneBag、ChrFormer、RiceGraphEncoder、TraitQueryDecoder、OrdinalMultiHead；正式文档不再使用旧模型命名字段。
 - [2026-06-13 16:37:27 CST] 启动 Phase 1 正式输入构建；本地新增 PED/MAP 流式转 `X_uint8.npy` 脚本、phenotype 多任务矩阵脚本和 SLURM q07 预处理脚本；已完成 `py_compile`、`sh -n`、`git diff --check`、静态安全扫描和独立代码审核，等待在计算节点提交预处理作业。
+- [2026-06-13 17:41:37 CST] Phase 1 输入矩阵构建完成并验证：初始 SLURM 作业 `8562916` 在 phenotype sheet 选择处失败（误读 workbook 说明页，未找到 `GS_ACCNO`）；修复为自动选择含 `GS_ACCNO/STOCK_ID` 的 phenotype 数据页，并通过 `v2.1_ped_to_phenotype_overlap.tsv` 将 IRIS sample ID 映射到 phenotype `STOCK_ID`。补交作业 `8562917` 在 `cu` 分区 3 秒完成，跳过已存在 genotype 矩阵并重建 phenotype；验证 `X_uint8.npy` shape=`3000x365710`，`Y_multitask.npy`/`mask_multitask.npy` shape=`3000x35`，35 个 trait 入选。
+- [2026-06-13 17:41:37 CST] Phase 1 split 构建完成：生成 `processed/splits/random_seed42.tsv` 和 region leave-out splits（Southeast_Asia、South_Asia、East_Asia）；监督可用样本 2,266，metadata 对接 3,000/3,000。当前 `3K_list_sra_ids.txt` 不含 subpopulation 字段，因此 subpopulation split 未生成并在 `split_report.tsv` 中显式记录。
 
 ## 8. 下一步执行优先级
 
-1. 在 q07 提交 `scripts/slurm/preprocess_rice_geneformer.sh`，把 PED/MAP 转为 `X_uint8.npy` 并生成 phenotype multitask matrix。
-2. 作业完成后检查 `processed/genotype/conversion_report.tsv`、`processed/phenotype/phenotype_report.tsv`、`trait_metadata.tsv` 和矩阵维度。
-3. 构建 random/subpopulation/region splits。
-4. 在 train fold 内生成 pvalues。
-5. 下载 rice annotation，构建 gene2snps。
-6. 下载或构建 rice gene knowledge graph。
+1. 在 train fold 内生成 pvalues；严格使用 split 的 train samples，避免全数据 p-value 泄漏。
+2. 下载 rice annotation，构建 gene2snps。
+3. 下载或构建 rice gene knowledge graph。
+4. 进入首批 10 个 high-coverage traits 的 GWAS 与 baseline smoke run。
