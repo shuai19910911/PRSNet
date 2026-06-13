@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 21:06:38 CST
+最后更新：2026-06-13 21:23:57 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -170,10 +170,11 @@ baseline + ablation：2–5 天
 - [2026-06-13 20:18:46 CST] Phase 5 最小 RiceGeneFormer-OMTL smoke 复核：修正 masked loss 只在 observed labels 上计算，避免缺失表型 `NaN` 被 `0*NaN` 传播；复跑 CPU smoke 通过（`torch=2.6.0+cpu`、`status=ok`、`x_shape=3000x365710`、`y_shape=3000x35`、`logit_shape=2x35`、`loss=6.324990272521973`、`grad_norm=23.806309651940786`），并通过 `py_compile`、SLURM `sh -n`、`git diff --check`、静态安全扫描和独立代码复审。`PRSNet` 环境仍为 CPU-only PyTorch（`cuda_available=False`、`torch.version.cuda=None`），因此未提交 GPU smoke；待切换 CUDA 版 PyTorch 后运行 `scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh`。
 - [2026-06-13 20:41:45 CST] Phase 5 GPU smoke 启动条件复查：`PRSNet` 环境已可加载 CUDA 版 PyTorch（`torch=2.6.0+cu124`、`torch.version.cuda=12.4`），登录节点无 GPU 所以 `torch.cuda.is_available=False`；复跑最小 CPU smoke 通过（`status=ok`、`x_shape=3000x365710`、`y_shape=3000x35`、`logit_shape=2x35`、`loss=6.424133777618408`、`grad_norm=24.175355683459742`）。尝试提交 `sbatch -p gpu10 -c 4 --mem=24G --gres=gpu:1 scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 失败：SLURM 返回 `invalid partition specified: gpu10`；`sinfo` 当前仅显示 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`，未暴露 GPU 分区/节点。因此本轮未提交 GPU 作业，需用户在可访问的 `gpu10` shell 或管理员提供的 GPU 分区上手动启动。
 - [2026-06-13 21:06:38 CST] Phase 5/6 最小训练闭环完成：新增本地 `scripts/model/rice_geneformer_omtl_train.py`，实现 10 个 `core_ordinal` traits 的 ordinal cumulative-link masked multi-task loss、train/val loop、accuracy/MAE/macro-F1/Spearman 指标、manifest/metrics 输出和 checkpoint。脚本通过 `py_compile`、`git diff --check`、CPU 1 epoch smoke 以及独立代码审核（无 security_concerns / logic_errors）。在 `gpu10` 通过 SSH 仅使用 GPU 0 运行 3 epoch 小训练（batch=8, genes=2048, hidden_dim=64, max_steps_per_epoch=20, torch `2.6.0+cu124`）：train loss `0.6585 → 0.5768 → 0.5579`，val loss `0.5965 → 0.5547 → 0.5223`，最终 val accuracy `0.3873`、MAE `0.8111`、macro-F1 `0.1427`、Spearman `0.0931`，输出目录为本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_gpu0_e3_g2048_b8/`（不上传 GitHub）。
+- [2026-06-13 21:23:57 CST] Phase 5/6 bounded pilot 继续推进：确认 `sacct` 中 Phase 5 model-input smoke 作业 `8562921` 为 `COMPLETED|0:0|00:00:08`，manifest/report 终验仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。随后在 `gpu10` 物理 GPU 0 上运行 10 epoch bounded pilot（batch=8, genes=2048, hidden_dim=64, max_steps_per_epoch=30, torch `2.6.0+cu124`）：train loss `0.6362 → 0.4560`，val loss `0.5651 → 0.4500`，best epoch `10`，最终 val accuracy `0.5894`、MAE `0.5935`、macro-F1 `0.2236`、Spearman `-0.0292`，输出目录为本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_gpu0_e10_g2048_b8_s30/`（含 `training_manifest.json`、`training_metrics.tsv`、`checkpoint_last.pt`，约 927K；不上传 GitHub）。
 
 ## 8. 下一步执行优先级
 
-1. 基于已通过的 3 epoch GPU 小训练，扩大到 10–20 epoch 的 bounded pilot，并记录是否持续下降、是否过拟合。
+1. 基于已通过的 10 epoch GPU bounded pilot，扩大到 20–50 epoch 小规模训练并加入 early-stopping / best-checkpoint 选择，确认 val loss 是否继续下降及 Spearman 是否稳定转正。
 2. 启动 baseline smoke：SNP-MLP、LightGBM/XGBoost 每 trait 小测试，先确认同一 split/trait/metric 口径下的比较基线。
 3. 启动结构消融 smoke：random degree-matched graph、without p-value prior、不同 `max_genes`/`max_snps_per_gene` 规模。
 4. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
