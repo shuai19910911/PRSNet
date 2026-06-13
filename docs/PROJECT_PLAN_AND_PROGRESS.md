@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 18:20:50 CST
+最后更新：2026-06-13 18:57:26 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -165,10 +165,11 @@ baseline + ablation：2–5 天
 - [2026-06-13 18:20:50 CST] Phase 2 train-fold GWAS 作业 `8562918` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:07:31`, batch MaxRSS `2151896K`）。验证 `core_ordinal/gwas_report.tsv` 为 40 行（10 个核心 trait × 4 个 split），40 组 `pvalues.npy`/`betas.npy` shape 均为 `(365710,)`，无缺失输出；所有代表性数组 finite p-value 数为 365,710。
 - [2026-06-13 18:20:50 CST] Phase 3 启动并完成首版 SNP-to-gene mapping：下载 Ensembl Plants IRGSP-1.0 release 61 GFF3（gzip 校验通过），新增 `download_rice_annotation.sh`、`build_snp_gene_map.py`、`build_snp_gene_map.sh`，通过 `sh -n`、`py_compile`、`git diff --check`、静态安全扫描和独立代码审核。SLURM 作业 `8562919` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:00:07`），窗口为 gene body ±5 kb；结果：365,710 SNP、35,806 genes、265,028 unique SNPs mapped、486,452 SNP-gene edges、34,139 genes with SNPs。
 - [2026-06-13 18:35:56 CST] Phase 4 完成首版 gene graph baseline：新增 `build_gene_graph.py` 和 `build_gene_graph_baseline.sh`，通过 `py_compile`、`sh -n`、`git diff --check`、静态安全扫描和独立代码审核。SLURM 作业 `8562920` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:00:10`）；基于 34,139 个 mapped genes 构建 chromosome k-neighbor graph（k=5）和 degree-matched random negative-control graph，二者均为 170,515 undirected edges / 341,030 directed edges。
+- [2026-06-13 18:57:26 CST] Phase 4 输出复核通过：确认 `graph_report.tsv`、`chr_neighbor_k5` 与 `random_degree_matched_k5` 的 `gene_nodes.tsv`/`graph_edges.tsv`/`edge_index.npy`/`edge_weight.npy`/`edge_relation.npy` 均存在且非空；`edge_index` shape 均为 `(2, 341030)`，directed edge count 均等于 `2 × 170,515`，random graph 与 chromosome-neighbor graph 边数一致。随后 Phase 5 dataloader/model-input smoke 作业 `8562921` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:00:08`）：验证 `X_uint8.npy=(3000,365710)`、`Y/mask=(3000,35)`、random split train/val/test/unused=`1586/340/340/734`、10 个 core ordinal trait 的 GWAS pvalue shape 均为 365,710、baseline graph 34,139 nodes / 341,030 directed edges。
 
 ## 8. 下一步执行优先级
 
-1. 准备 RiceGeneFormer-OMTL 首轮训练配置与 dataloader smoke test，优先使用 `X_uint8.npy`、35-trait phenotype matrix、core_ordinal p-values、±5kb gene2snps、chr_neighbor/random graph。
-2. 启动首批 10 个 high-coverage core traits 的模型 smoke run 与 baseline smoke run。
+1. 准备 RiceGeneFormer-OMTL 首轮 CPU/小 GPU 训练代码与 dataloader 单 batch smoke test，优先使用 `X_uint8.npy`、35-trait phenotype matrix、core_ordinal p-values、±5kb gene2snps、chr_neighbor/random graph。
+2. 通过代码审核后，再提交首批 10 个 high-coverage core traits 的模型 smoke run 与 baseline smoke run。
 3. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
 4. 后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
