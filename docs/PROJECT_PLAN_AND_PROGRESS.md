@@ -1,6 +1,6 @@
 # CropPRSNet 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 15:34:30 CST
+最后更新：2026-06-13 15:53:45 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要的计划状态，不新增零散进展文件。
 
@@ -119,6 +119,8 @@ baseline + ablation：2–5 天
 - [2026-06-13 15:01:00 CST] 发现 v0.7 `.fam` 使用 B001/B002 样本 ID；phenotype 与 3K metadata 可通过 IRGC 编号 2,266/2,266 对接，但 v0.7 缺少 B-code→IRIS 映射，不作为主训练数据。
 - [2026-06-13 15:19:00 CST] 下载 `3K_coreSNP-v2.1.plink.tar.gz`；验证 gzip 完整；解析得到 365,710 SNP × 3,000 samples，样本 ID 直接为 IRIS ID。
 - [2026-06-13 15:25:00 CST] 完成 v2.1 PED 样本与 metadata / phenotype 对接；PED vs metadata：3,000/3,000；PED vs phenotype：2,266/2,266；确认 v2.1 作为第一阶段正式主 genotype 数据。
+
+- [2026-06-13 15:53:45 CST] 根据 phenotype_trait_summary.tsv 确认当前 3K Rice 表型主要是分类/有序等级 descriptor code；将主模型从通用 CropPRSNet-MT-GPS 优化为 CropPRSNet-Ordinal-MTL：低秩 SNP2Gene projection、2 层 residual GIN、trait-conditioned attention readout、ordinal cumulative-link heads、binary heads 和 nominal categorical heads；详见 docs/MODEL_ARCHITECTURE.md 第 8 节。
 
 ## 7. 下一步执行优先级
 

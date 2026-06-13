@@ -1,6 +1,6 @@
 # PRSNet-2 与 CropPRSNet 模型结构解析
 
-更新时间：2026-06-13 15:34:30 CST
+更新时间：2026-06-13 15:53:45 CST
 
 ## 1. PRSNet-2 原始模型结构
 
@@ -319,3 +319,305 @@ L_total = sum_t w_t L_t + lambda_sg_l1 L_sg_l1 + lambda_graph L_graph_smooth + l
 4. pathway-level interpretation。
 5. cross-subpopulation generalization：indica↔japonica↔aus。
 6. 后续迁移到 maize G2F：加入 G×E environment encoder。
+
+
+## 8. 基于当前 3K Rice 表型特征的架构优化方案
+
+更新时间：2026-06-13 15:53:45 CST
+
+### 8.1 当前数据对模型设计的约束
+
+当前 phenotype 表不是标准连续产量/株高原始测量值，而是 IRRI rice descriptor code：
+
+```text
+样本：2,266 phenotype-overlap accessions
+表型：47 个 phenotype fields
+类型：多数为分类 / 有序等级 / 少数二分类
+SNP：365,710 core SNPs, 3,000 genotype samples, 2,266 可与 phenotype 对齐
+```
+
+因此不能把所有表型粗暴当作普通连续回归。最优架构应从“连续回归大模型”调整为：
+
+```text
+多任务 + 混合表型类型 + 有序等级感知 + 缺失 mask + trait-conditioned readout
+```
+
+### 8.2 表型类型分组
+
+#### A. 强有序农艺等级 traits，主训练任务
+
+这些是第一优先级，因为与育种相关，且数值等级有明确生物顺序：
+
+```text
+CULT_CODE_REPRO   culm length / 株高等级，7 类，n=2094
+LLT_CODE          leaf length / 叶长等级，5 类，n=2095
+PLT_CODE_POST     panicle length / 穗长等级，4 类，n=2090
+SDHT_CODE         seedling height / 苗高等级，3 类，n=2093
+CUNO_CODE_REPRO   culm number / 分蘖数量等级，3 类，n=2095
+CUDI_CODE_REPRO   culm diameter / 茎秆直径等级，2 类，n=2111
+SPKF              spikelet fertility / 小穗育性等级，5 类，n=2264
+CUST_REPRO        culm strength / 茎秆强度抗倒伏等级，8 类，n=2264
+PTH               panicle threshability / 脱粒性，3 类，n=2262
+PSH               panicle shattering / 落粒性，3 类，n=1526
+```
+
+这些任务采用 ordinal-aware head，而不是普通 softmax head。
+
+#### B. 姿态/结构类有序 traits，第二主任务
+
+```text
+CUAN_REPRO        culm angle，5 类，n=2264
+FLA_REPRO         flag leaf angle，4 类，n=2262
+LA                leaf angle，10 类，n=1528
+PEX_REPRO         panicle exsertion，5 类，n=2265
+PTY               panicle type，10 类，n=2263
+SECOND_BR_REPRO   secondary branching，3 类，n=1522
+```
+
+这些保留 ordinal 或 semi-ordinal head，并在 multitask 中权重略低于 A 组。
+
+#### C. 颜色/形态类别 traits，辅助任务
+
+```text
+AUCO_REV_VEG, BLCO_REV_VEG, AWCO_REV, INCO_REV_REPRO,
+BLSCO_REV_VEG, LIGCO_REV_VEG, CCO_REV_VEG, LPCO_REV_POST,
+APCO_REV_REPRO, SCCO_REV, SLCO_REV 等
+```
+
+这些类别通常不是严格线性顺序，适合 categorical head。它们可作为辅助任务提高 backbone 对亚群和形态背景的表征，但不作为核心性能结论。
+
+#### D. 低覆盖 traits
+
+低于 1,000 样本的 traits 不进入第一阶段主训练，只用于后续 few-shot / transfer 分析。
+
+### 8.3 优化后的正式模型：CropPRSNet-Ordinal-MTL
+
+针对当前数据，正式主模型从原计划的通用 CropPRSNet-MT-GPS 调整为：
+
+```text
+CropPRSNet-Ordinal-MTL
+```
+
+核心结构：
+
+```text
+Genotype X_uint8 / dosage
+  → SNP2Gene encoder with train-fold GWAS SG-dropout
+  → low-rank gene-specific projection
+  → rice gene graph encoder
+  → trait-conditioned attention readout
+  → three head families:
+       1) ordinal cumulative-link heads
+       2) binary heads
+       3) nominal categorical heads
+  → masked multitask loss
+```
+
+### 8.4 SNP2Gene encoder 优化
+
+当前样本量只有 2,266，不能使用过大的 gene-specific full projection 造成过拟合。采用低秩 gene projection：
+
+```text
+u_gene: n_kernels
+A_gene: gene embedding, d_rank
+B: shared kernel-to-hidden tensor, d_rank × n_kernels × d_hidden
+W_gene = A_gene @ B
+```
+
+建议参数：
+
+```text
+n_snp_kernels = 16 或 24，第一正式主模型用 24
+d_hidden = 96
+d_rank = 8 或 16
+gene_window = gene body ±5kb
+sg_dropout_init = 0.9
+sg_dropout_min = 0.15
+sg_l1 = 100, 300, 1000 网格
+```
+
+理由：
+
+- 365,710 SNP × 24 kernels 约 8.8M SNP filter 参数，可接受。
+- 低秩 projection 避免 70M+ gene-specific projection 过拟合。
+- d_hidden=96 比 128 稳，更适合 2,266 样本。
+
+### 8.5 Gene graph encoder 优化
+
+当前 phenotype 多为 descriptor code，强受群体结构和形态类别影响。graph encoder 不宜太深，避免 over-smoothing。
+
+主配置：
+
+```text
+gnn_layers = 2
+encoder = GIN + residual + layer norm
+hidden_dim = 96
+dropout = 0.15
+edge_dropout = 0.10
+```
+
+增强配置用于第二轮：
+
+```text
+encoder = GPS-style local GIN + global Performer attention
+gnn_layers = 2
+```
+
+第一轮不建议 3–4 层深 GNN，因为 2,266 样本 + descriptor labels 容易图过平滑和标签泄漏式拟合群体结构。
+
+### 8.6 Trait-conditioned attention readout
+
+不同表型依赖不同基因模块，因此 readout 必须 trait-conditioned：
+
+```text
+trait_embedding e_t
+attention_score(g,t) = MLP([h_g, e_t, h_g * e_t])
+h_trait = sum_g softmax_or_sparsemax(attention_score(g,t)) * V(h_g)
+```
+
+建议使用 sparsemax / entmax attention 做解释性增强：
+
+```text
+attention = entmax15(scores)
+```
+
+如果实现复杂，第一版用 softmax + entropy penalty。
+
+### 8.7 输出头设计
+
+#### Ordinal cumulative-link head
+
+对有序 K 类 trait，不用普通 CrossEntropy，而用 K-1 个阈值：
+
+```text
+score_t = Linear(h_trait)
+P(y > k) = sigmoid(score_t - threshold_k)
+```
+
+loss：ordinal BCE / cumulative link loss。
+
+优点：
+
+- 保留等级顺序。
+- 把 “1 类错成 2 类” 与 “1 类错成 7 类” 区分开。
+- 适合 CULT_CODE_REPRO、LLT_CODE、PLT_CODE_POST、SPKF 等。
+
+#### Binary head
+
+对二分类 trait：
+
+```text
+BCEWithLogitsLoss(pos_weight=class_balance)
+```
+
+#### Nominal categorical head
+
+对颜色类无序 trait：
+
+```text
+CrossEntropyLoss(class_weight=effective_number_weight)
+```
+
+### 8.8 Loss 设计
+
+```text
+L_total = L_ordinal + L_binary + L_nominal
+          + lambda_sg_l1 * L_pvalue_l1
+          + lambda_attn * L_attention_entropy
+          + lambda_pc_adv * L_population_adversarial_optional
+```
+
+任务权重：
+
+```text
+A组核心农艺等级 traits: weight 1.0
+B组结构姿态 traits: weight 0.7
+C组颜色辅助 traits: weight 0.3
+低覆盖 traits: 第一阶段不用
+```
+
+缺失值处理：
+
+```text
+每个 trait 单独 mask；只对非缺失样本计算该 trait loss。
+```
+
+类别不平衡处理：
+
+```text
+effective number of samples weighting
+或 inverse sqrt class frequency
+```
+
+### 8.9 群体结构控制
+
+3K rice 亚群结构强，必须避免模型只学 indica/japonica 背景。
+
+输入中加入 population covariates：
+
+```text
+metadata subgroup / region / top genotype PCs
+```
+
+但主模型不直接把 subgroup 当捷径特征。建议两种评估方式：
+
+1. prediction model：允许 PC covariates 拼接到 readout，用于最大预测性能。
+2. genetics-only model：不输入 subgroup，只在 split 和评估中控制，用于证明 genotype graph 能力。
+
+可选 adversarial deconfounding：
+
+```text
+h_trait → phenotype head
+h_trait → subgroup adversarial head with gradient reversal
+```
+
+第一阶段先做 PC-corrected GWAS pvalue + subgroup holdout，不立即加 adversarial，避免复杂化。
+
+### 8.10 推荐第一版正式配置
+
+```yaml
+model: CropPRSNet-Ordinal-MTL
+sample_count: 2266
+snp_count: 365710 before gene mapping
+trait_groups:
+  core_ordinal: [CULT_CODE_REPRO, LLT_CODE, PLT_CODE_POST, SDHT_CODE, CUNO_CODE_REPRO, CUDI_CODE_REPRO, SPKF, CUST_REPRO, PTH, PSH]
+  structure_ordinal: [CUAN_REPRO, FLA_REPRO, LA, PEX_REPRO, PTY, SECOND_BR_REPRO]
+  auxiliary_nominal: [AUCO_REV_VEG, BLCO_REV_VEG, AWCO_REV, BLSCO_REV_VEG, APCO_REV_REPRO, SCCO_REV, ENDO]
+encoder:
+  snp_kernels: 24
+  hidden_dim: 96
+  gene_projection: low_rank
+  rank: 16
+  gene_window: ±5kb
+graph:
+  type: rice_string_first_then_hybrid
+  layers: 2
+  conv: GIN
+  residual: true
+  norm: layernorm
+  dropout: 0.15
+  edge_dropout: 0.10
+readout:
+  trait_conditioned_attention: true
+  attention: softmax_with_entropy_penalty_first; entmax_second
+heads:
+  ordinal: cumulative_link
+  binary: bce_logits
+  nominal: weighted_cross_entropy
+optimization:
+  optimizer: AdamW
+  lr: 2e-4
+  weight_decay: 1e-4
+  batch_size: 64 or full-batch gene graph with sample minibatch
+  epochs: 300
+  early_stop_patience: 40
+  amp: true
+```
+
+### 8.11 预期相比原 PRSNet-2 的改进
+
+1. 不再把 ordinal descriptor 当连续值硬回归，减少目标定义错误。
+2. 多任务共享 backbone，缓解单 trait 样本不足。
+3. trait-conditioned attention 允许不同表型有不同候选 gene。
+4. 低秩 gene projection 显著降低过拟合风险。
+5. subgroup/region holdout 可验证真实泛化，而不是随机划分虚高。
