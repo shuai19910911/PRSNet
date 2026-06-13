@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 22:41:32 CST
+最后更新：2026-06-13 22:56:23 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -177,11 +177,11 @@ baseline + ablation：2–5 天
 - [2026-06-13 22:08:40 CST] Phase 6 结构性改造第一步完成：训练脚本新增 `trait_attention` / `mean` pooling 选项，默认 `trait_attention`，用每个 trait query 对 gene tokens 做 multi-head attention，实现 trait-specific gene attention pooling；同时新增 best checkpoint 保存、`checkpoint_best.pt` / `checkpoint_last.pt` manifest 记录、`early_stop_patience` 早停、非有限 validation loss 显式失败、标准 JSON 输出（NaN/Inf 指标转为 `null`）。验证：`py_compile` 通过；CPU smoke（32 genes、hidden_dim 32、batch 2、2 epoch、1 step/epoch）输出 `status=ok`、pooling=`trait_attention`、best epoch `2`、best val loss `0.6908`、manifest 可被 `python -m json.tool` 解析；独立代码复审通过，无 security_concerns / logic_errors。该步只验证结构与产物正确性，不用于性能宣称；下一步需要在 `gpu10` 物理 GPU 0 上跑 trait_attention bounded pilot，并与原 mean/global pooling、LightGBM baseline 对比。
 - [2026-06-13 22:29:25 CST] Phase 6 trait_attention bounded pilot 完成：在 `gpu10` 物理 GPU 0 上运行与上一轮对齐的 15 epoch pilot（batch=16, genes=2048, hidden_dim=64, max_steps_per_epoch=50, lr=2e-4, pooling=`trait_attention`, PyTorch `2.6.0+cu124`）。输出 `status=ok`，15/15 epoch 完成，best epoch `11`，best val loss `0.3927`，final val loss `0.4097`、accuracy `0.5943`、MAE `0.6126`、macro-F1 `0.2171`、Spearman `-0.0043`；产物位于本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_traitattn_gpu0_e15_g2048_b16_s50/`，`training_manifest.json` 可被 `json.tool` 解析，`checkpoint_best.pt`/`checkpoint_last.pt` 分别约 990K/992K（不上传 GitHub）。结论：trait-specific attention pooling 的 best val loss 优于原 2048-gene mean/global pilot（约 `0.4080`），但 final macro-F1 仍低于 LightGBM top-SNP baseline（`0.3354`），下一步应做 top-GWAS SNP dense side branch 和 pooling/prior 消融。
 - [2026-06-13 22:41:32 CST] Phase 6 top-GWAS SNP dense side branch 完成 CPU 级结构验证：训练脚本新增 `--top-snp-count`，默认 `0` 关闭；启用时仅从当前 split 的 train-fold GWAS p-values 选择 top SNP union，并强制 p-value 路径位于 `gwas/core_ordinal/<split>/<trait>/pvalues.npy`，检查 shape、finite、范围 `[0,1]`、去重和边界，防止使用全数据 GWAS 造成泄漏。模型新增 top-SNP dense encoder，将 top SNP dosage 编码为 side token 并加到 trait tokens；manifest 记录 `top_snp_count`、`top_snp_count_used`、`top_snp_traits_used`。验证：TDD red 阶段确认旧脚本不接受 `--top-snp-count`；`py_compile` 通过；CPU smoke（top_snp_count=16、trait_attention、16 genes、hidden_dim 32、1 epoch）输出 `status=ok`、`top_snp_count_used=16`、best val loss `0.7368`，manifest 可由 `json.tool` 解析；默认 `top_snp_count=0` + mean pooling 兼容 smoke 通过；独立代码复审通过，无 security_concerns / logic_errors。该步只验证结构和无泄漏数据通路，不作性能宣称；下一步需在 `gpu10` 物理 GPU 0 上做 bounded pilot。
+- [2026-06-13 22:56:23 CST] Phase 6 top-GWAS SNP dense side branch bounded pilot 完成：先按独立代码复审意见补强 p-value shape/finite/range 校验、smoke 脚本 canonical train-fold p-value 路径约束、split sample_index 边界/重复检查，并复跑 `py_compile`、`sh -n`、`git diff --check`、CPU top_snp_count=16 smoke 与独立复审，均通过。随后在 `gpu10` 物理 GPU 0 上运行 top_snp_count=512 + trait_attention pilot（genes=2048、hidden_dim=64、batch=16、15 epoch、50 steps/epoch、lr=2e-4、early_stop_patience=5，PyTorch `2.6.0+cu124`），输出 `status=ok`、`top_snp_count_used=512`、15/15 epoch 完成，best epoch `11`，best val loss `0.3821`，final val loss `0.3945`、accuracy `0.5624`、MAE `0.6106`、macro-F1 `0.2707`、Spearman `0.2205`。产物位于本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_top512_traitattn_gpu0_e15_g2048_b16_s50/`，manifest 可由 `json.tool` 解析，`checkpoint_best.pt`/`checkpoint_last.pt` 分别约 1.15 MB（不上传 GitHub）。结论：top-GWAS side branch 改善 best val loss 和 macro-F1，但 accuracy 仍低于 LightGBM top-SNP baseline，下一步继续做 no-prior/random-prior/mean pooling 消融和 SNP-MLP/XGBoost baseline。
 
 ## 8. 下一步执行优先级
 
-1. 在 `gpu10` 物理 GPU 0 上运行 top-GWAS SNP dense side branch bounded pilot（建议与 trait_attention 最佳设置对齐：2048 genes、hidden 64、batch 16、15 epoch、lr 2e-4，并测试 top_snp_count=512）。
-2. 启动消融 smoke：mean pooling、without p-value prior、random p-value prior、random degree-matched graph、不同 `max_snps_per_gene` 规模。
-3. 补充 SNP-MLP / XGBoost baseline smoke，形成 LightGBM 之外的第二传统模型对照。
-4. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
-5. 后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
+1. 启动消融 smoke：mean pooling、without p-value prior、random p-value prior、random degree-matched graph、不同 `max_snps_per_gene` 规模，优先对齐 top_snp_count=512 + trait_attention 当前最佳配置。
+2. 补充 SNP-MLP / XGBoost baseline smoke，形成 LightGBM 之外的第二传统模型对照。
+3. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
+4. 后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
