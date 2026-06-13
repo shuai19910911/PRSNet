@@ -1,623 +1,666 @@
-# PRSNet-2 与 CropPRSNet 模型结构解析
+# RiceGeneFormer-OMTL 模型结构设计
 
-更新时间：2026-06-13 15:53:45 CST
+更新时间：2026-06-13 16:12:27 CST
 
-## 1. PRSNet-2 原始模型结构
+## 1. 模型定位
 
-代码来源：`lihan97/PRSNet-2`，本地分析路径：`/home/user/zhangzhishuai/myhermes/PRSNet/PRSNet-2/PRSNet-2/src/model.py`。
+`RiceGeneFormer-OMTL` 是面向作物 genotype-to-phenotype prediction 的自研基因组表征模型。
 
-原始 PRSNet-2 的主链路为：
+全称：Rice Gene-aware Ordinal Multi-Task Transformer。
 
-```text
-sample-level SNP dosage matrix X
-  → SNP2Gene multi-kernel aggregator
-  → gene-level hidden states H_gene
-  → gene-gene interaction graph GIN message passing
-  → attentive graph readout
-  → phenotype prediction MLP
-```
-
-### 1.1 输入
-
-原始代码要求：
+第一阶段针对 3K Rice Genome / SNP-Seek 数据的真实约束设计：
 
 ```text
-X.npy              samples × SNPs genotype dosage
-Y.npy              samples labels；原代码默认二分类
-pvalues.npy        SNP-level GWAS p-value
-gene2snps.pkl      gene_id -> SNP index list
-ggi_graph_800.bin  DGL gene-gene graph
+samples with phenotype: 2,266
+core SNPs: 365,710
+genotype samples: 3,000
+phenotype fields: 47
+phenotype type: ordinal descriptor / nominal categorical / binary
 ```
 
-原始任务是人类疾病二分类：
+核心目标不是单性状测试，而是构建正式的多任务、有序等级感知、可解释、可跨亚群评估的水稻基因组预测框架。
 
-- loss：`BCEWithLogitsLoss`
-- metric：AUROC / AUPRC
-- graph：人类 gene-gene interaction，类似 STRING 高置信网络
-- regularization：GWAS significance-guided dropout + p-value-weighted L1
-
-### 1.2 SNP2Gene 多核聚合
-
-核心类：`SNP2Gene`。
-
-每个 SNP 输入为 dosage。模型维护 `n_snp_kernels` 个全基因组 SNP filter，每个 filter 对全部 SNP 有一组可训练标量权重：
+## 2. 总体架构
 
 ```text
-filter_k: R^(n_snps)
+X_uint8 genotype dosage
+  │
+  ├─ VariantGate
+  │    SNP-level allele filters
+  │    train-fold GWAS p-value gating
+  │    MAF/missingness-aware dropout
+  │
+  ├─ GeneBag Aggregator
+  │    gene body ±5kb SNP grouping
+  │    distance / p-value / dosage aware attention pooling
+  │    low-rank gene-specific projection
+  │
+  ├─ ChrFormer
+  │    chromosome-wise gene ordering
+  │    local attention over neighboring genes
+  │    LD block and cis-context modeling
+  │
+  ├─ RiceGraphEncoder
+  │    PPI / pathway / co-expression multi-relation graph
+  │    relation-aware graph message passing
+  │    graph residual and edge dropout
+  │
+  ├─ GatedFusion
+  │    VariantGate-GeneBag token
+  │    chromosome context token
+  │    graph context token
+  │
+  ├─ TraitQueryDecoder
+  │    per-trait query embedding
+  │    cross-attention to fused gene tokens
+  │    sparse / entropy-regularized gene attention
+  │
+  └─ Multi-head phenotype decoder
+       ordinal cumulative-link heads
+       binary BCE heads
+       nominal weighted CE heads
 ```
 
-对每个样本、每个 SNP、每个 kernel：
+核心改造点：不再只做 SNP→gene→graph→global readout，而是加入染色体局部上下文、trait query cross-attention、多关系知识图谱、ordinal-aware phenotype heads 和无泄漏统计遗传先验。
+
+## 3. 输入数据定义
+
+### 3.1 Genotype
 
 ```text
-z(sample,snp,k) = dosage(sample,snp) × filter(k,snp)
+X: samples × SNPs
+encoding:
+  0 = homozygous allele1
+  1 = heterozygous
+  2 = homozygous allele2
+  3 = missing
 ```
 
-随后按 `gene2snps` 聚合：
+第一阶段主输入：3K coreSNP v2.1，365,710 SNP × 3,000 samples；与 phenotype 对齐后使用 2,266 samples。
+
+### 3.2 SNP metadata
+
+每个 SNP 保留：
 
 ```text
-u(sample,gene,k) = sum over snp in gene window of z(sample,snp,k)
+snp_id
+chromosome
+position
+allele1
+allele2
+MAF
+missing_rate
+train_fold_pvalue_per_trait
 ```
 
-再通过 gene-specific projection 将 kernel 维度映射到 hidden dimension：
+p-value 只能来自对应 split 的 training samples，不能用全数据 GWAS。
 
-```text
-h_gene = u_gene × W_gene + e_gene
-```
+### 3.3 Gene metadata
 
-其中：
+水稻 gene annotation 使用 IRGSP-1.0 / MSU7 坐标体系。
 
-- `W_gene`: gene-specific projection，形状约为 `n_genes × n_snp_kernels × d_hidden`
-- `e_gene`: gene embedding，形状为 `n_genes × d_hidden`
-
-### 1.3 significance-guided dropout
-
-训练时根据 SNP p-value 自适应 dropout：
-
-```text
-p_drop_snp = sg_dropout_init / (-log10(p_value_snp))
-p_drop_snp = clamp(p_drop_snp, sg_dropout_min, 0.99)
-```
-
-意义：
-
-- GWAS 越显著，`p_value` 越小，`-log10(p)` 越大，dropout 越低。
-- 非显著 SNP 更容易被 dropout。
-- 这将统计遗传先验注入端到端深度模型，降低小样本植物数据上的过拟合风险。
-
-### 1.4 p-value-weighted L1 正则
-
-原始 trainer 中 L1：
-
-```text
-L_sg_l1 = mean_k sum_snp |filter(k,snp)| × p_value_snp / sum_snp p_value_snp
-```
-
-显著 SNP p-value 小，惩罚弱；不显著 SNP 惩罚强。
-
-总 loss：
-
-```text
-L = L_pred + lambda_sg_l1 × L_sg_l1
-```
-
-### 1.5 Gene-Gene GNN
-
-原模型使用 DGL `GINConv`：
-
-```text
-h_g(l+1) = MLP_l((1+eps)h_g(l) + sum over u in N(g) h_u(l))
-```
-
-实现细节：
-
-- aggregator：sum
-- learn_eps：False
-- 每层后：BatchNorm + GELU
-- 默认层数：1，可扩展到 2–4 层
-
-### 1.6 attention readout
-
-`AttentiveReadout` 对每个 gene node 计算权重：
-
-```text
-a_g = sigmoid(w^T Linear(h_g))
-v_g = Linear(h_g)
-h_graph = sum_g a_g × v_g
-```
-
-输出：
-
-- phenotype prediction
-- gene attention weights，可用于候选基因解释。
-
-## 2. 植物迁移关键变化
-
-### 2.1 表型从疾病二分类改为植物多任务预测
-
-水稻第一阶段正式目标不做“玩具测试”，直接做高覆盖 phenotype 的正式预测：
-
-- ordinal/categorical traits：CrossEntropy / ordinal regression / macro-F1 / balanced accuracy
-- numeric-coded agronomic traits：Huber/MSE / Pearson r / R² / RMSE
-- 多任务版本：共享 SNP2Gene + GNN backbone，多 trait heads
-
-正式训练不只训练单一性状；主模型采用多任务学习，单性状结果作为消融。
-
-### 2.2 SNP-to-gene mapping
-
-水稻使用 IRGSP-1.0/MSU7 坐标体系。正式定义：
+主窗口：
 
 ```text
 gene window = gene body ± 5 kb
 ```
 
-消融：
-
-- gene body only
-- ±2 kb
-- ±5 kb 主模型
-- ±10 kb
-- LD-pruned SNP subset vs all available v2.1 core SNP
-
-如果 SNP 不落入任何 gene window：
-
-- 主模型丢弃 intergenic orphan SNP，保证生物解释性；
-- 扩展模型可加入 nearest-gene assignment。
-
-### 2.3 plant gene graph
-
-水稻主模型 graph 优先级：
-
-1. STRING Oryza sativa high-confidence PPI/cofunctional graph，score ≥ 700 或 ≥ 800。
-2. Rice pathway graph：Plant Reactome / KEGG pathway co-membership。
-3. Rice co-expression graph：公开 RNA-seq atlas 构建 gene-gene Pearson/Spearman top-k graph。
-4. Hybrid graph：PPI + pathway + co-expression 多关系图。
-
-主模型建议采用多关系图神经网络：
+消融窗口：
 
 ```text
-relation types = PPI, pathway, coexpression
+gene body only
+±2 kb
+±5 kb
+±10 kb
+nearest-gene assignment
 ```
 
-如果先用 DGL 实现，正式主模型可采用：
+### 3.4 Trait metadata
 
-- R-GCN / HGT-style relation-specific message passing；或
-- GraphGPS-style local GNN + global attention；或
-- GIN/GATv2 多图 ensemble。
-
-### 2.4 CropPRSNet 正式架构
-
-正式推荐架构：CropPRSNet-MT-GPS。
+每个 trait 记录：
 
 ```text
-X_genotype: samples × SNPs
-p_snp: SNP p-values from train-fold GWAS
-snp2gene: SNP→gene window mapping
-G_gene: multi-relation rice gene graph
-Trait metadata: trait type, dictionary class count
-
-SNP2Gene encoder:
-  multi-kernel SNP filters + significance-guided dropout
-  gene-specific projection
-  gene embedding
-
-Gene graph encoder:
-  2–3 GraphGPS/GIN/GATv2 layers
-  residual connections
-  layer norm / batch norm
-  dropout 0.1–0.3
-
-Readout:
-  trait-conditioned attention readout
-  optional Set Transformer / gated attention pooling
-
-Heads:
-  regression head for continuous/ordinal numeric traits
-  classification head for categorical descriptor traits
-  multitask uncertainty weighting or GradNorm loss balancing
-
-Outputs:
-  predictions
-  gene attention per trait
-  SNP kernel importance
-  candidate gene ranking
+trait_name
+trait_group
+trait_type: ordinal / binary / nominal
+class_count
+class_dictionary
+n_nonmissing
+class_frequency
+loss_weight
+metric_set
 ```
 
-## 3. 参数规模预估
+缺失 phenotype 通过 trait-level mask 处理。
 
-以水稻 v2.1：
+## 4. VariantGate：SNP 显著性门控编码器
 
-```text
-SNPs: 365,710
-samples: 3,000 genotype; 2,266 phenotype-overlap
-mapped genes: 预计 25,000–40,000
-n_snp_kernels: 16–32
-d_hidden: 64–128
-gnn_layers: 2–3
-```
+VariantGate 负责把原始 SNP dosage 转成若干全基因组 variant response channel。
 
-核心参数估算：
-
-- SNP filters：`365,710 × 32 ≈ 11.7M`
-- gene projection：`35,000 × 32 × 64 ≈ 71.7M`，若 d=64,k=32
-- gene embedding：`35,000 × 64 ≈ 2.2M`
-- GNN + heads：< 5M
-
-主模型参数约：
+对样本 i、SNP s、kernel k：
 
 ```text
-80M–110M parameters
-```
-
-如显存不足，采用低秩 gene projection：
-
-```text
-W_gene = A_gene × B_kernel
-```
-
-将 projection 参数从 ~72M 降到 ~10M–20M。
-
-## 4. 训练目标
-
-多任务总 loss：
-
-```text
-L_total = sum_t w_t L_t + lambda_sg_l1 L_sg_l1 + lambda_graph L_graph_smooth + lambda_attn L_attention_sparse
+z_i,s,k = dosage_i,s × w_s,k × g_s,t
 ```
 
 其中：
 
-- `L_t`：每个 trait 的分类/回归 loss。
-- `w_t`：uncertainty weighting 或 GradNorm 自适应任务权重。
-- `L_sg_l1`：p-value-weighted SNP filter L1。
-- `L_graph_smooth`：相邻 gene 表征平滑，但权重较小，避免过平滑。
-- `L_attention_sparse`：促进解释性 gene attention 稀疏。
-
-## 5. 评估指标
-
-### 回归/ordinal numeric traits
-
-- Pearson r
-- Spearman rho
-- R²
-- RMSE
-- MAE
-
-### categorical traits
-
-- balanced accuracy
-- macro-F1
-- AUROC/AUPRC for binary traits
-
-### 生物解释性
-
-- attention top genes 与已知 QTL/gene 富集
-- GWAS significant region recovery
-- pathway enrichment
-- graph ablation: real graph > random graph > no graph
-
-## 6. 消融实验
-
-正式实验必须包含：
-
-1. rrBLUP / GBLUP baseline。
-2. XGBoost / LightGBM SNP baseline。
-3. SNP-MLP baseline。
-4. PRSNet-style no-graph。
-5. CropPRSNet with PPI graph。
-6. CropPRSNet with pathway graph。
-7. CropPRSNet with hybrid graph。
-8. without significance-guided dropout。
-9. without p-value L1。
-10. different gene windows：gene body / ±2kb / ±5kb / ±10kb。
-11. random graph negative control。
-
-## 7. 下游任务设计
-
-1. 多性状 phenotype prediction。
-2. candidate gene prioritization。
-3. trait-specific gene network discovery。
-4. pathway-level interpretation。
-5. cross-subpopulation generalization：indica↔japonica↔aus。
-6. 后续迁移到 maize G2F：加入 G×E environment encoder。
-
-
-## 8. 基于当前 3K Rice 表型特征的架构优化方案
-
-更新时间：2026-06-13 15:53:45 CST
-
-### 8.1 当前数据对模型设计的约束
-
-当前 phenotype 表不是标准连续产量/株高原始测量值，而是 IRRI rice descriptor code：
-
 ```text
-样本：2,266 phenotype-overlap accessions
-表型：47 个 phenotype fields
-类型：多数为分类 / 有序等级 / 少数二分类
-SNP：365,710 core SNPs, 3,000 genotype samples, 2,266 可与 phenotype 对齐
+w_s,k: learnable SNP filter
+g_s,t: trait-aware significance gate
 ```
 
-因此不能把所有表型粗暴当作普通连续回归。最优架构应从“连续回归大模型”调整为：
+significance gate 使用 train-fold GWAS p-value：
 
 ```text
-多任务 + 混合表型类型 + 有序等级感知 + 缺失 mask + trait-conditioned readout
+score_s,t = -log10(p_s,t + eps)
+g_s,t = clamp(normalize(score_s,t), g_min, g_max)
 ```
 
-### 8.2 表型类型分组
-
-#### A. 强有序农艺等级 traits，主训练任务
-
-这些是第一优先级，因为与育种相关，且数值等级有明确生物顺序：
+训练期 dropout：
 
 ```text
-CULT_CODE_REPRO   culm length / 株高等级，7 类，n=2094
-LLT_CODE          leaf length / 叶长等级，5 类，n=2095
-PLT_CODE_POST     panicle length / 穗长等级，4 类，n=2090
-SDHT_CODE         seedling height / 苗高等级，3 类，n=2093
-CUNO_CODE_REPRO   culm number / 分蘖数量等级，3 类，n=2095
-CUDI_CODE_REPRO   culm diameter / 茎秆直径等级，2 类，n=2111
-SPKF              spikelet fertility / 小穗育性等级，5 类，n=2264
-CUST_REPRO        culm strength / 茎秆强度抗倒伏等级，8 类，n=2264
-PTH               panicle threshability / 脱粒性，3 类，n=2262
-PSH               panicle shattering / 落粒性，3 类，n=1526
+drop_prob_s,t = base_drop / (score_s,t + c)
+drop_prob_s,t = clamp(drop_prob_s,t, min_drop, max_drop)
 ```
 
-这些任务采用 ordinal-aware head，而不是普通 softmax head。
+设计目的：
 
-#### B. 姿态/结构类有序 traits，第二主任务
+1. 显著 SNP 更稳定保留。
+2. 非显著 SNP 更强正则，减少 2,266 样本下的过拟合。
+3. 所有 p-value 都在 train fold 内生成，避免信息泄漏。
+4. kernel 数量限制在 24，避免对 365,710 SNP 直接构建过大 dense projection。
 
-```text
-CUAN_REPRO        culm angle，5 类，n=2264
-FLA_REPRO         flag leaf angle，4 类，n=2262
-LA                leaf angle，10 类，n=1528
-PEX_REPRO         panicle exsertion，5 类，n=2265
-PTY               panicle type，10 类，n=2263
-SECOND_BR_REPRO   secondary branching，3 类，n=1522
+推荐配置：
+
+```yaml
+variant_gate:
+  n_kernels: 24
+  sg_dropout_init: 0.9
+  sg_dropout_min: 0.15
+  sg_dropout_max: 0.95
+  pvalue_eps: 1.0e-12
 ```
 
-这些保留 ordinal 或 semi-ordinal head，并在 multitask 中权重略低于 A 组。
+## 5. GeneBag：SNP-to-gene attention 聚合
 
-#### C. 颜色/形态类别 traits，辅助任务
+GeneBag 将落入同一 gene window 的 SNP response 聚合为 gene token。
+
+对 gene g 的 SNP 集合 S_g：
 
 ```text
-AUCO_REV_VEG, BLCO_REV_VEG, AWCO_REV, INCO_REV_REPRO,
-BLSCO_REV_VEG, LIGCO_REV_VEG, CCO_REV_VEG, LPCO_REV_POST,
-APCO_REV_REPRO, SCCO_REV, SLCO_REV 等
+a_i,s,g = Attention([z_i,s,* ; distance_s,g ; pvalue_s,t ; MAF_s ; missing_s])
+u_i,g = sum_{s in S_g} softmax(a_i,s,g) × z_i,s,*
 ```
 
-这些类别通常不是严格线性顺序，适合 categorical head。它们可作为辅助任务提高 backbone 对亚群和形态背景的表征，但不作为核心性能结论。
+相比简单求和，GeneBag 显式利用：
 
-#### D. 低覆盖 traits
+1. SNP 到 gene body / TSS 的距离。
+2. train-fold p-value。
+3. MAF 与 missingness。
+4. genotype dosage response。
+5. 可扩展 functional annotation，例如 CDS/intron/promoter。
 
-低于 1,000 样本的 traits 不进入第一阶段主训练，只用于后续 few-shot / transfer 分析。
+### 5.1 低秩 gene-specific projection
 
-### 8.3 优化后的正式模型：CropPRSNet-Ordinal-MTL
-
-针对当前数据，正式主模型从原计划的通用 CropPRSNet-MT-GPS 调整为：
+直接为每个 gene 学一个 full projection 容易过拟合。RiceGeneFormer 使用低秩 gene projection：
 
 ```text
-CropPRSNet-Ordinal-MTL
+A_g ∈ R^rank
+B ∈ R^(rank × n_kernels × hidden_dim)
+W_g = A_g @ B
+h_i,g = u_i,g @ W_g + e_g
 ```
 
-核心结构：
+推荐配置：
 
-```text
-Genotype X_uint8 / dosage
-  → SNP2Gene encoder with train-fold GWAS SG-dropout
-  → low-rank gene-specific projection
-  → rice gene graph encoder
-  → trait-conditioned attention readout
-  → three head families:
-       1) ordinal cumulative-link heads
-       2) binary heads
-       3) nominal categorical heads
-  → masked multitask loss
+```yaml
+gene_bag:
+  hidden_dim: 96
+  rank: 16
+  gene_window: plus_minus_5kb
+  attention_hidden: 64
+  dropout: 0.15
 ```
 
-### 8.4 SNP2Gene encoder 优化
+优势：
 
-当前样本量只有 2,266，不能使用过大的 gene-specific full projection 造成过拟合。采用低秩 gene projection：
+1. 既允许 gene-specific effect，又不会产生过大的每基因独立投影矩阵。
+2. 对 2,266 phenotype-overlap samples 更稳。
+3. 后续可以加入 gene family / pathway prior 初始化 A_g。
+
+## 6. ChrFormer：染色体局部上下文编码器
+
+植物基因组预测不能只依赖 gene graph，因为同染色体 LD block、相邻 cis-regulatory region 和 haplotype neighborhood 对表型有重要影响。
+
+ChrFormer 按 chromosome 和 genomic position 排序 gene token，在每条染色体内做局部 attention：
 
 ```text
-u_gene: n_kernels
-A_gene: gene embedding, d_rank
-B: shared kernel-to-hidden tensor, d_rank × n_kernels × d_hidden
-W_gene = A_gene @ B
+H_chr = LocalAttention(H_gene_ordered, window = 64 or 128 genes)
 ```
 
-建议参数：
+设计约束：
 
-```text
-n_snp_kernels = 16 或 24，第一正式主模型用 24
-d_hidden = 96
-d_rank = 8 或 16
-gene_window = gene body ±5kb
-sg_dropout_init = 0.9
-sg_dropout_min = 0.15
-sg_l1 = 100, 300, 1000 网格
+1. 不做全基因组 full attention，避免 O(n_genes^2) 成本。
+2. 每条染色体独立编码，避免人为连接不同染色体。
+3. 使用 relative genomic distance bias。
+4. 使用 residual + layernorm。
+
+推荐配置：
+
+```yaml
+chr_former:
+  layers: 2
+  attention_type: local
+  window_genes: 64
+  hidden_dim: 96
+  num_heads: 4
+  relative_position_bias: true
+  dropout: 0.15
 ```
 
-理由：
+## 7. RiceGraphEncoder：水稻基因知识图谱编码器
 
-- 365,710 SNP × 24 kernels 约 8.8M SNP filter 参数，可接受。
-- 低秩 projection 避免 70M+ gene-specific projection 过拟合。
-- d_hidden=96 比 128 稳，更适合 2,266 样本。
+RiceGraphEncoder 建模 gene-gene biological relationship。
 
-### 8.5 Gene graph encoder 优化
-
-当前 phenotype 多为 descriptor code，强受群体结构和形态类别影响。graph encoder 不宜太深，避免 over-smoothing。
-
-主配置：
+候选关系：
 
 ```text
-gnn_layers = 2
-encoder = GIN + residual + layer norm
-hidden_dim = 96
-dropout = 0.15
-edge_dropout = 0.10
+relation_1: STRING / PPI / cofunctional edge
+relation_2: Plant Reactome or KEGG pathway co-membership
+relation_3: public rice RNA-seq atlas co-expression
+relation_4: optional orthology-supported functional edge
 ```
 
-增强配置用于第二轮：
+主模型采用多关系图编码：
 
 ```text
-encoder = GPS-style local GIN + global Performer attention
-gnn_layers = 2
+h_g^(l+1) = FFN(
+  h_g^(l)
+  + sum_r alpha_r × MessagePassing_r(h_g^(l), N_r(g))
+)
 ```
 
-第一轮不建议 3–4 层深 GNN，因为 2,266 样本 + descriptor labels 容易图过平滑和标签泄漏式拟合群体结构。
+实现可从 relation-aware GAT / R-GCN 起步；后续增强为 GraphGPS-style local graph + global attention。
 
-### 8.6 Trait-conditioned attention readout
+推荐配置：
 
-不同表型依赖不同基因模块，因此 readout 必须 trait-conditioned：
-
-```text
-trait_embedding e_t
-attention_score(g,t) = MLP([h_g, e_t, h_g * e_t])
-h_trait = sum_g softmax_or_sparsemax(attention_score(g,t)) * V(h_g)
+```yaml
+rice_graph_encoder:
+  graph_type: hybrid_multi_relation
+  layers: 2
+  hidden_dim: 96
+  relation_types: [ppi, pathway, coexpression]
+  edge_dropout: 0.10
+  residual: true
+  norm: layernorm
+  activation: gelu
 ```
 
-建议使用 sparsemax / entmax attention 做解释性增强：
+不建议第一版使用 4 层以上深图网络，因为 2,266 样本 + descriptor labels 容易过平滑。
+
+## 8. GatedFusion：variant / chromosome / graph 三路融合
+
+对每个 gene g，融合三种表征：
 
 ```text
-attention = entmax15(scores)
+h_gene_raw: GeneBag output
+h_chr: ChrFormer output
+h_graph: RiceGraphEncoder output
 ```
 
-如果实现复杂，第一版用 softmax + entropy penalty。
-
-### 8.7 输出头设计
-
-#### Ordinal cumulative-link head
-
-对有序 K 类 trait，不用普通 CrossEntropy，而用 K-1 个阈值：
+使用 trait-aware gate：
 
 ```text
-score_t = Linear(h_trait)
-P(y > k) = sigmoid(score_t - threshold_k)
+α_t,g = softmax(MLP([h_gene_raw, h_chr, h_graph, trait_embedding_t]))
+h_fused_t,g = α1*h_gene_raw + α2*h_chr + α3*h_graph
+```
+
+意义：
+
+1. 有些 trait 更依赖局部 LD / haplotype context。
+2. 有些 trait 更依赖 pathway / gene network。
+3. 有些颜色或形态 descriptor 可能主要反映群体结构，gate 可辅助诊断。
+
+## 9. TraitQueryDecoder：表型条件解码器
+
+每个 trait t 维护一个 query embedding：
+
+```text
+q_t ∈ R^hidden_dim
+```
+
+通过 cross-attention 从所有 gene tokens 中读取 trait-specific representation：
+
+```text
+score_t,g = q_t^T W h_fused_t,g / sqrt(d)
+a_t,g = sparse_attention(score_t,g)
+h_t = sum_g a_t,g × V(h_fused_t,g)
+```
+
+第一版实现：softmax + entropy penalty。
+
+第二版增强：entmax15 / sparsemax，提高解释性和候选基因稀疏度。
+
+输出：
+
+```text
+h_t: trait-specific phenotype representation
+a_t,g: trait-specific gene attention for interpretation
+```
+
+优势：
+
+1. 不同 trait 学不同 candidate gene module。
+2. 避免所有表型共用一个全局 readout。
+3. attention 可用于 candidate gene ranking 与 pathway enrichment。
+
+## 10. 输出头设计
+
+### 10.1 Ordinal cumulative-link head
+
+对有序 K 类 trait，不用普通 CrossEntropy，而使用 K-1 个阈值：
+
+```text
+score_t = Linear(h_t)
+P(y > k) = sigmoid(score_t - threshold_t,k), k = 1..K-1
 ```
 
 loss：ordinal BCE / cumulative link loss。
 
-优点：
+适用 trait：
 
-- 保留等级顺序。
-- 把 “1 类错成 2 类” 与 “1 类错成 7 类” 区分开。
-- 适合 CULT_CODE_REPRO、LLT_CODE、PLT_CODE_POST、SPKF 等。
+```text
+CULT_CODE_REPRO
+LLT_CODE
+PLT_CODE_POST
+SDHT_CODE
+CUNO_CODE_REPRO
+CUDI_CODE_REPRO
+SPKF
+CUST_REPRO
+PTH
+PSH
+CUAN_REPRO
+FLA_REPRO
+PEX_REPRO
+PTY
+```
 
-#### Binary head
+优势：
+
+1. 保留等级顺序。
+2. 把相邻等级错误与远距离等级错误区分开。
+3. 更符合 IRRI descriptor code 的数据本质。
+
+### 10.2 Binary head
 
 对二分类 trait：
 
 ```text
-BCEWithLogitsLoss(pos_weight=class_balance)
+logit_t = Linear(h_t)
+loss_t = BCEWithLogitsLoss(pos_weight = class_balance)
 ```
 
-#### Nominal categorical head
+### 10.3 Nominal categorical head
 
-对颜色类无序 trait：
+对无严格顺序的颜色/形态类别：
 
 ```text
-CrossEntropyLoss(class_weight=effective_number_weight)
+logits_t = Linear(h_t)
+loss_t = CrossEntropyLoss(class_weight = effective_number_weight)
 ```
 
-### 8.8 Loss 设计
+适用：颜色、形态状态、胚乳类型等 nominal traits。
+
+## 11. Loss 设计
+
+总 loss：
 
 ```text
-L_total = L_ordinal + L_binary + L_nominal
-          + lambda_sg_l1 * L_pvalue_l1
-          + lambda_attn * L_attention_entropy
-          + lambda_pc_adv * L_population_adversarial_optional
+L_total = Σ_t mask_t × w_t × L_trait_t
+          + λ_pvalue × L_pvalue_weighted_l1
+          + λ_attn × L_attention_sparse
+          + λ_graph × L_graph_consistency
+          + λ_calib × L_calibration_optional
+```
+
+### 11.1 Trait loss
+
+```text
+ordinal traits: cumulative-link ordinal loss
+binary traits: balanced BCE
+nominal traits: weighted CE
 ```
 
 任务权重：
 
 ```text
-A组核心农艺等级 traits: weight 1.0
-B组结构姿态 traits: weight 0.7
-C组颜色辅助 traits: weight 0.3
-低覆盖 traits: 第一阶段不用
+core agronomic ordinal traits: 1.0
+structure/posture ordinal traits: 0.7
+auxiliary nominal traits: 0.3
+low coverage traits: not used in first stage
 ```
 
-缺失值处理：
+### 11.2 p-value-weighted L1
 
 ```text
-每个 trait 单独 mask；只对非缺失样本计算该 trait loss。
+L_pvalue_weighted_l1 = Σ_s,k |w_s,k| × normalized_pvalue_weight_s
 ```
 
-类别不平衡处理：
+显著 SNP 惩罚较弱，非显著 SNP 惩罚较强。
+
+### 11.3 Attention sparse penalty
+
+第一版：entropy penalty。
+
+第二版：entmax / sparsemax 后降低或移除 entropy penalty。
+
+### 11.4 Graph consistency
+
+轻量 graph consistency 约束相邻 gene 表征，但权重必须小，避免 graph over-smoothing。
+
+## 12. 群体结构控制与评估 split
+
+3K Rice 亚群结构强，随机划分可能产生虚高结果。因此必须至少使用三类 split：
 
 ```text
-effective number of samples weighting
-或 inverse sqrt class frequency
+random stratified split
+subpopulation holdout split
+region holdout split
 ```
 
-### 8.9 群体结构控制
+模型设置分两类报告：
 
-3K rice 亚群结构强，必须避免模型只学 indica/japonica 背景。
+1. `genetics_only`：不把 subgroup/region 作为输入，只在 split 与评估中控制。
+2. `pc_corrected`：GWAS p-value 使用 train-fold top genotype PCs；可在 readout 末端加入 PCs 作为 covariate。
 
-输入中加入 population covariates：
+第一阶段暂不强制加入 adversarial subgroup head，避免模型过度复杂；第二阶段可加入 gradient reversal 做 deconfounding 消融。
 
-```text
-metadata subgroup / region / top genotype PCs
-```
-
-但主模型不直接把 subgroup 当捷径特征。建议两种评估方式：
-
-1. prediction model：允许 PC covariates 拼接到 readout，用于最大预测性能。
-2. genetics-only model：不输入 subgroup，只在 split 和评估中控制，用于证明 genotype graph 能力。
-
-可选 adversarial deconfounding：
-
-```text
-h_trait → phenotype head
-h_trait → subgroup adversarial head with gradient reversal
-```
-
-第一阶段先做 PC-corrected GWAS pvalue + subgroup holdout，不立即加 adversarial，避免复杂化。
-
-### 8.10 推荐第一版正式配置
+## 13. 推荐第一版正式配置
 
 ```yaml
-model: CropPRSNet-Ordinal-MTL
-sample_count: 2266
-snp_count: 365710 before gene mapping
+model:
+  name: RiceGeneFormer-OMTL
+  sample_count: 2266
+  snp_count_before_mapping: 365710
+  phenotype_fields: 47
+
 trait_groups:
-  core_ordinal: [CULT_CODE_REPRO, LLT_CODE, PLT_CODE_POST, SDHT_CODE, CUNO_CODE_REPRO, CUDI_CODE_REPRO, SPKF, CUST_REPRO, PTH, PSH]
-  structure_ordinal: [CUAN_REPRO, FLA_REPRO, LA, PEX_REPRO, PTY, SECOND_BR_REPRO]
-  auxiliary_nominal: [AUCO_REV_VEG, BLCO_REV_VEG, AWCO_REV, BLSCO_REV_VEG, APCO_REV_REPRO, SCCO_REV, ENDO]
-encoder:
+  core_ordinal:
+    - CULT_CODE_REPRO
+    - LLT_CODE
+    - PLT_CODE_POST
+    - SDHT_CODE
+    - CUNO_CODE_REPRO
+    - CUDI_CODE_REPRO
+    - SPKF
+    - CUST_REPRO
+    - PTH
+    - PSH
+  structure_ordinal:
+    - CUAN_REPRO
+    - FLA_REPRO
+    - LA
+    - PEX_REPRO
+    - PTY
+    - SECOND_BR_REPRO
+  auxiliary_nominal:
+    - AUCO_REV_VEG
+    - BLCO_REV_VEG
+    - AWCO_REV
+    - BLSCO_REV_VEG
+    - APCO_REV_REPRO
+    - SCCO_REV
+    - ENDO
+
+variant_gate:
   snp_kernels: 24
+  significance_gate: train_fold_gwas_pvalue
+  sg_dropout_init: 0.9
+  sg_dropout_min: 0.15
+  sg_l1_grid: [100, 300, 1000]
+
+gene_bag:
   hidden_dim: 96
-  gene_projection: low_rank
+  projection: low_rank
   rank: 16
-  gene_window: ±5kb
-graph:
-  type: rice_string_first_then_hybrid
+  gene_window: plus_minus_5kb
+  attention_features:
+    - dosage_response
+    - minus_log10_pvalue
+    - distance_to_gene
+    - maf
+    - missing_rate
+
+chr_former:
   layers: 2
-  conv: GIN
+  attention: local
+  window_genes: 64
+  heads: 4
+  relative_position_bias: true
+
+rice_graph_encoder:
+  type: hybrid_multi_relation
+  relation_types: [ppi, pathway, coexpression]
+  layers: 2
   residual: true
   norm: layernorm
   dropout: 0.15
   edge_dropout: 0.10
-readout:
-  trait_conditioned_attention: true
-  attention: softmax_with_entropy_penalty_first; entmax_second
+
+fusion:
+  type: trait_aware_gated_fusion
+
+trait_decoder:
+  layers: 2
+  attention: softmax_with_entropy_penalty_first
+  sparse_attention_second_stage: entmax15
+
 heads:
   ordinal: cumulative_link
   binary: bce_logits
   nominal: weighted_cross_entropy
+
 optimization:
   optimizer: AdamW
-  lr: 2e-4
-  weight_decay: 1e-4
-  batch_size: 64 or full-batch gene graph with sample minibatch
+  lr: 2.0e-4
+  weight_decay: 1.0e-4
+  batch_size: 64_to_256
   epochs: 300
   early_stop_patience: 40
   amp: true
 ```
 
-### 8.11 预期相比原 PRSNet-2 的改进
+## 14. 参数规模预估
 
-1. 不再把 ordinal descriptor 当连续值硬回归，减少目标定义错误。
-2. 多任务共享 backbone，缓解单 trait 样本不足。
-3. trait-conditioned attention 允许不同表型有不同候选 gene。
-4. 低秩 gene projection 显著降低过拟合风险。
-5. subgroup/region holdout 可验证真实泛化，而不是随机划分虚高。
+```text
+SNP filters: 365,710 × 24 ≈ 8.8M
+GeneBag attention and low-rank projection: 10–20M
+ChrFormer: 5–15M
+RiceGraphEncoder: 5–10M
+TraitQueryDecoder: 2–5M
+Heads: <1M
+Total: about 30–60M parameters
+```
+
+这个规模比直接构建巨大 gene-specific dense projection 更稳，更适合 2,266 phenotype-overlap samples。
+
+## 15. 评估指标
+
+### Ordinal traits
+
+```text
+macro-F1
+balanced accuracy
+ordinal MAE
+quadratic weighted kappa
+Spearman rho
+calibration error
+```
+
+### Binary traits
+
+```text
+AUROC
+AUPRC
+balanced accuracy
+macro-F1
+```
+
+### Nominal traits
+
+```text
+macro-F1
+balanced accuracy
+weighted CE
+confusion matrix
+```
+
+### 泛化能力
+
+```text
+random split performance
+subpopulation holdout performance
+region holdout performance
+performance drop from random to holdout
+```
+
+### 生物解释性
+
+```text
+trait-specific top attention genes
+known QTL / candidate gene overlap
+pathway enrichment
+graph ablation: hybrid graph vs random graph vs no graph
+attention stability across folds
+```
+
+## 16. Baseline 与消融实验
+
+必须包含：
+
+1. rrBLUP / GBLUP。
+2. XGBoost / LightGBM SNP baseline。
+3. SNP-MLP baseline。
+4. GeneBag only。
+5. GeneBag + ChrFormer。
+6. GeneBag + RiceGraphEncoder。
+7. GeneBag + ChrFormer + RiceGraphEncoder。
+8. STRING/PPI graph only。
+9. pathway graph only。
+10. co-expression graph only。
+11. hybrid graph。
+12. random degree-matched graph negative control。
+13. without significance gate。
+14. without p-value weighted L1。
+15. without trait-query decoder。
+16. ordinary CrossEntropy vs ordinal cumulative-link。
+17. gene window body / ±2kb / ±5kb / ±10kb。
+
+## 17. 后续扩展
+
+1. `RiceGeneFormer-GxE`：加入 environment encoder，用于 maize G2F 多环境预测。
+2. `RiceGeneFormer-FS`：低覆盖 trait few-shot transfer。
+3. `RiceGeneFormer-XAI`：candidate gene、pathway、trait module 稳定性分析。
+4. `PanCropGeneFormer`：跨作物 orthology-aware 迁移。
