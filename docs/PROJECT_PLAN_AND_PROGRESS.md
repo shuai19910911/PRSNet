@@ -164,10 +164,11 @@ baseline + ablation：2–5 天
 - [2026-06-13 17:41:37 CST] Phase 1 split 构建完成：生成 `processed/splits/random_seed42.tsv` 和 region leave-out splits（Southeast_Asia、South_Asia、East_Asia）；监督可用样本 2,266，metadata 对接 3,000/3,000。当前 `3K_list_sra_ids.txt` 不含 subpopulation 字段，因此 subpopulation split 未生成并在 `split_report.tsv` 中显式记录。
 - [2026-06-13 18:20:50 CST] Phase 2 train-fold GWAS 作业 `8562918` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:07:31`, batch MaxRSS `2151896K`）。验证 `core_ordinal/gwas_report.tsv` 为 40 行（10 个核心 trait × 4 个 split），40 组 `pvalues.npy`/`betas.npy` shape 均为 `(365710,)`，无缺失输出；所有代表性数组 finite p-value 数为 365,710。
 - [2026-06-13 18:20:50 CST] Phase 3 启动并完成首版 SNP-to-gene mapping：下载 Ensembl Plants IRGSP-1.0 release 61 GFF3（gzip 校验通过），新增 `download_rice_annotation.sh`、`build_snp_gene_map.py`、`build_snp_gene_map.sh`，通过 `sh -n`、`py_compile`、`git diff --check`、静态安全扫描和独立代码审核。SLURM 作业 `8562919` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:00:07`），窗口为 gene body ±5 kb；结果：365,710 SNP、35,806 genes、265,028 unique SNPs mapped、486,452 SNP-gene edges、34,139 genes with SNPs。
+- [2026-06-13 18:35:56 CST] Phase 4 完成首版 gene graph baseline：新增 `build_gene_graph.py` 和 `build_gene_graph_baseline.sh`，通过 `py_compile`、`sh -n`、`git diff --check`、静态安全扫描和独立代码审核。SLURM 作业 `8562920` 在 `cu` 分区完成（`COMPLETED`, exit `0:0`, elapsed `00:00:10`）；基于 34,139 个 mapped genes 构建 chromosome k-neighbor graph（k=5）和 degree-matched random negative-control graph，二者均为 170,515 undirected edges / 341,030 directed edges。
 
 ## 8. 下一步执行优先级
 
-1. 基于已完成的 `gene2snps` 进入 rice gene knowledge graph 构建：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas。
-2. 准备 RiceGeneFormer-OMTL 首轮训练配置与 dataloader smoke test。
-3. 启动首批 10 个 high-coverage traits 的主模型 / baseline smoke run。
+1. 准备 RiceGeneFormer-OMTL 首轮训练配置与 dataloader smoke test，优先使用 `X_uint8.npy`、35-trait phenotype matrix、core_ordinal p-values、±5kb gene2snps、chr_neighbor/random graph。
+2. 启动首批 10 个 high-coverage core traits 的模型 smoke run 与 baseline smoke run。
+3. 下载/构建外部 rice knowledge graph：STRING rice、Plant Reactome/KEGG pathway、co-expression atlas，用于替换或融合当前 baseline graph。
 4. 后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
