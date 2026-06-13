@@ -159,13 +159,13 @@ baseline + ablation：2–5 天
 - [2026-06-13 15:25:00 CST] 完成 v2.1 PED 样本与 metadata / phenotype 对接；PED vs metadata：3,000/3,000；PED vs phenotype：2,266/2,266；确认 v2.1 作为第一阶段正式主 genotype 数据。
 - [2026-06-13 15:53:45 CST] 根据 phenotype trait summary 确认当前 3K Rice 表型主要是分类/有序等级 descriptor code；将建模目标调整为 ordinal / binary / nominal masked multi-task learning。
 - [2026-06-13 16:12:27 CST] 将正式模型体系重构为自研 RiceGeneFormer-OMTL：新增 VariantGate、GeneBag、ChrFormer、RiceGraphEncoder、TraitQueryDecoder、OrdinalMultiHead；正式文档不再使用旧模型命名字段。
+- [2026-06-13 16:37:27 CST] 启动 Phase 1 正式输入构建；本地新增 PED/MAP 流式转 `X_uint8.npy` 脚本、phenotype 多任务矩阵脚本和 SLURM q07 预处理脚本；已完成 `py_compile`、`sh -n`、`git diff --check`、静态安全扫描和独立代码审核，等待在计算节点提交预处理作业。
 
 ## 8. 下一步执行优先级
 
-1. 写 `scripts/slurm/preprocess_ped_to_npy.sh` 和 Python 流式 PED 转换脚本。
-2. 提交 CPU 作业到 q07/q08，把 PED/MAP 转为 `X_uint8.npy` 或 zarr。
-3. 解析 phenotype dictionary，确定首批 10–20 个正式 traits。
-4. 构建 random/subpopulation/region splits。
-5. 在 train fold 内生成 pvalues。
-6. 下载 rice annotation，构建 gene2snps。
-7. 下载或构建 rice gene knowledge graph。
+1. 在 q07 提交 `scripts/slurm/preprocess_rice_geneformer.sh`，把 PED/MAP 转为 `X_uint8.npy` 并生成 phenotype multitask matrix。
+2. 作业完成后检查 `processed/genotype/conversion_report.tsv`、`processed/phenotype/phenotype_report.tsv`、`trait_metadata.tsv` 和矩阵维度。
+3. 构建 random/subpopulation/region splits。
+4. 在 train fold 内生成 pvalues。
+5. 下载 rice annotation，构建 gene2snps。
+6. 下载或构建 rice gene knowledge graph。
