@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-13 21:42:45 CST
+最后更新：2026-06-13 21:45:54 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -173,6 +173,7 @@ baseline + ablation：2–5 天
 - [2026-06-13 21:23:57 CST] Phase 5/6 bounded pilot 继续推进：确认 `sacct` 中 Phase 5 model-input smoke 作业 `8562921` 为 `COMPLETED|0:0|00:00:08`，manifest/report 终验仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。随后在 `gpu10` 物理 GPU 0 上运行 10 epoch bounded pilot（batch=8, genes=2048, hidden_dim=64, max_steps_per_epoch=30, torch `2.6.0+cu124`）：train loss `0.6362 → 0.4560`，val loss `0.5651 → 0.4500`，best epoch `10`，最终 val accuracy `0.5894`、MAE `0.5935`、macro-F1 `0.2236`、Spearman `-0.0292`，输出目录为本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_gpu0_e10_g2048_b8_s30/`（含 `training_manifest.json`、`training_metrics.tsv`、`checkpoint_last.pt`，约 927K；不上传 GitHub）。
 - [2026-06-13 21:27:40 CST] Phase 6 bounded pilot 与 baseline smoke 完成：在 `gpu10` 仅 GPU 0 运行 15 epoch bounded pilot（batch=16, genes=2048, hidden_dim=64, max_steps_per_epoch=50），train loss `0.6040 → 0.4145`，val loss 最优 epoch 11 为 `0.4080`，最终 val accuracy `0.5936`、MAE `0.6133`、macro-F1 `0.2125`；说明最小模型可稳定下降但后期出现轻微波动。随后新增本地 `scripts/model/baseline_lightgbm_core_smoke.py`，用每 trait train-fold GWAS top-512 SNP 训练 LightGBM baseline（10 traits, 40 estimators），脚本通过 `py_compile`、`git diff --check`、静态扫描、CPU smoke 和独立代码审核。LightGBM baseline 平均 accuracy `0.6271`、MAE `0.5547`、macro-F1 `0.3354`，majority baseline 平均 accuracy `0.6028`、MAE `0.6736`；当前 LightGBM 仍强于最小神经模型，下一步应优先做模型容量/训练策略与消融，而不是直接宣称优于传统 baseline。
 - [2026-06-13 21:42:45 CST] Phase 6 模型容量/学习率 pilot 完成：在 `gpu10` 仅 GPU 0 追加两组训练。容量提升组（genes=4096, hidden_dim=96, batch=8, 10 epoch, lr=2e-4）best/final val loss `0.4426`、accuracy `0.5867`、MAE `0.6125`、macro-F1 `0.2183`，未超过 2048-gene 15 epoch 组；低学习率组（genes=2048, hidden_dim=64, batch=16, 15 epoch, lr=1e-4）best/final val loss `0.4378`、accuracy `0.5936`、MAE `0.6140`、macro-F1 `0.2174`，较 lr=2e-4 的 best val loss `0.4080` 更差。结论：单纯增大 gene 数/hidden_dim 或降低 lr 未缩小与 LightGBM top-SNP baseline 的差距，下一步应优先做结构性改造（trait-specific gene pooling、best checkpoint/early stopping、no-prior/random-prior 消融、加入 top-GWAS SNP dense side branch）。
+- [2026-06-13 21:45:54 CST] Phase 6 追加容量安全复核：确认 `gpu10` 物理 GPU 0 可用（A100-40G，PyTorch `2.6.0+cu124`，CUDA available），运行更保守的 4096 genes / hidden_dim 96 / batch 4 / 8 epoch / 30 step pilot；输出 `status=ok`，best epoch 7，best val loss `0.4623`，final val loss `0.4788`、accuracy `0.3890`、MAE `0.8247`、macro-F1 `0.1525`，输出目录 `data/3krice/processed/rice_geneformer_omtl_train_gpu0_e8_g4096_h96_b4_s30/`（约 1.9M，不上传 GitHub）。该复核进一步支持：当前瓶颈不是单纯扩大 gene/token 容量，而是模型结构与训练目标需要改造。
 
 ## 8. 下一步执行优先级
 
