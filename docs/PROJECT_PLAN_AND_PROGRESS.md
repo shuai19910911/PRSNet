@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 04:11:06 CST
+最后更新：2026-06-15 04:28:36 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -275,6 +275,7 @@ baseline + ablation：2–5 天
 - [2026-06-15 03:13:30 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 03:33:00 CST] Cron 例行复核 Phase 5 输入 smoke 与环境/GPU 可用性：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet mamba 环境用绝对路径 `/home/user/zhangzhishuai/.local/share/mamba/envs/PRSNet/bin/python` 验证 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`（登录节点无 GPU 所以 `cuda_available=False` 正常）；本轮 `ssh gpu10` GPU 状态检查 45 秒超时，未新提交 GPU smoke/训练。继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 04:11:06 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮无新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+- [2026-06-15 04:28:36 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过脚本验证：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，GWAS core traits 数为 10。本轮没有新增训练/数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
