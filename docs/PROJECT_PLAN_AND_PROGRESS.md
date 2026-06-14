@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 12:13:35 CST
+最后更新：2026-06-14 12:24:47 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -214,10 +214,11 @@ baseline + ablation：2–5 天
 - [2026-06-14 12:05:05 CST] 尝试 gated fusion + mild class-balanced loss：在 gated top-SNP fusion seed42 上叠加 `--loss-weighting balanced --balance-alpha 0.25`，训练完成 `status=ok`，manifest 通过 `json.tool`，checkpoint_best/last 均非空约 1.55 MB。按默认 val_loss 选择的 best epoch `13`：best val loss `0.3856`、accuracy `0.5863`、MAE `0.5755`、macro-F1 `0.2786`、Spearman `0.1619`；但 metrics 中 epoch `12` 的 macro-F1 达到 `0.3101`（val loss `0.3886`、accuracy `0.5910`、MAE `0.5807`、Spearman `0.2508`），final epoch macro-F1 `0.2981`。结论：轻度 balanced loss 会牺牲 gated fusion 的 best val loss/accuracy，但显著改善少数类 macro-F1 的峰值；下一步已启动同配置 `--selection-metric val_macro_f1` 复跑，用 macro-F1 保存最佳 checkpoint，而不是按 val_loss 错过 epoch12。
 - [2026-06-14 12:07:47 CST] 完成 gated fusion + mild balanced + macro-F1 selection 复跑：同 seed42、gated top-SNP fusion、`balance-alpha=0.25`，但使用 `--selection-metric val_macro_f1` 保存最佳 checkpoint。输出 `status=ok`，manifest 通过 `json.tool`，checkpoint_best/last 非空约 1.55 MB；best epoch `12`、best selection score / macro-F1 `0.3101`、val loss `0.3886`、accuracy `0.5910`、MAE `0.5807`、Spearman `0.2508`，final macro-F1 `0.2981`。这是目前 RiceGeneFormer 系列中最高的 macro-F1 pilot，但仍低于 SNP-MLP alpha0.5 的 `0.3563` 和 LightGBM `0.3354`；说明 gated+轻度平衡能缓解少数类问题，但还不足以超过强 SNP baseline。下一步应补 seed43/44，判断 `0.31` 是否稳定。
 - [2026-06-14 12:13:35 CST] 补齐 gated + mild balanced + macro-F1 selection seed43/44：继续在 `gpu10` 物理 GPU0 上运行同一配置（top512 + trait_attention + GraphEncoder + gated top-SNP、`balance-alpha=0.25`、`selection_metric=val_macro_f1`）。seed43：`status=ok`、best epoch `15`、best macro-F1 `0.3045`、val loss `0.3857`、accuracy `0.5941`、MAE `0.5652`、Spearman `0.2831`；seed44：`status=ok`、best epoch `13`、best macro-F1 `0.2989`、val loss `0.4009`、accuracy `0.5723`、MAE `0.6095`、Spearman `0.2599`。三 seed manifest 均通过 `json.tool`，checkpoint_best/last 均非空约 1.55 MB。综合 seed42/43/44：macro-F1 稳定在 `0.299–0.310`，显著高于未平衡 gated 的 `0.262–0.283`，但仍未超过 LightGBM `0.3354` 或 SNP-MLP alpha0.5 `0.3563`。当前最佳神经主线应记为 gated top-SNP fusion + mild balanced + macro-F1 selection，但论文主性能门槛仍由 SNP/tabular baselines 占优。
+- [2026-06-14 12:24:47 CST] Cron 继续补齐 SNP-MLP alpha0.5 多 seed：复核 Phase 5 model-input smoke 作业 `8562921` 仍为 `COMPLETED|0:0|00:00:08`，输入 manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。随后在 `cu` 分区提交并完成两个 SNP-MLP balanced alpha0.5 seed 补跑：作业 `8563012`（seed43）`COMPLETED|0:0|00:01:39|MaxRSS 1523316K`，best epoch `2`、best/final val loss `0.9224`、accuracy `0.6119`、MAE `0.5722`、macro-F1 `0.3398`、Spearman `0.3148`；作业 `8563013`（seed44）`COMPLETED|0:0|00:01:40|MaxRSS 1524984K`，best epoch `2`、best/final val loss `0.9309`、accuracy `0.6159`、MAE `0.5748`、macro-F1 `0.3430`、Spearman `0.3267`。两组 manifest 均通过 `json.tool`；输出仅在本地数据区，不上传 GitHub。综合 seed42/43/44，SNP-MLP alpha0.5 macro-F1 约 `0.340–0.356`，仍高于当前最佳 RiceGeneFormer gated+mild-balanced macro-F1 `0.299–0.310`，说明论文主性能门槛仍是 top-SNP SNP-MLP / tree baselines。
 
 ## 8. 下一步执行优先级
 
 1. 不再把当前 chr / prefix random / STRING / fusion 的轻量 GraphEncoder 结果解释为图结构特异增益；若继续图方向，应转向 Plant Reactome/KEGG pathway、co-expression atlas，或重新设计 relation-aware graph encoder。
-2. SNP-MLP class-balanced alpha 网格显示 alpha `0.50` 是当前较好折中（macro-F1 `0.3563`、accuracy `0.6177`）；下一步优先围绕 alpha `0.4–0.6` 做多 seed，或把 class-balanced/ordinal 混合目标迁移回 RiceGeneFormer。
+2. SNP-MLP class-balanced alpha0.5 多 seed 已完成，macro-F1 约 `0.340–0.356`，整体仍强于当前 RiceGeneFormer；下一步若继续 baseline 线，应围绕 alpha `0.4–0.6` 做更系统网格/校准，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. gated fusion + mild balanced alpha0.25 + macro-F1 selection 多 seed 稳定提升 macro-F1 至 `0.299–0.310`，可作为当前最佳神经主线；下一步需要解释为何仍落后 LightGBM/SNP-MLP，并考虑两阶段校准或蒸馏。
+4. gated fusion + mild balanced alpha0.25 + macro-F1 selection 多 seed 稳定提升 RiceGeneFormer macro-F1 至 `0.299–0.310`，可作为当前最佳神经主线；下一步需要解释为何仍落后 LightGBM/SNP-MLP，并考虑两阶段校准、蒸馏或更直接的少数类目标。
