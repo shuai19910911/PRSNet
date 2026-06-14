@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 16:55:52 CST
+最后更新：2026-06-14 17:15:49 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -233,10 +233,11 @@ baseline + ablation：2–5 天
 - [2026-06-14 16:21:55 CST] 完成 distillation w=0.10 full-step seed43/44 并做 deterministic full-val/test 复核：seed43 训练 `status=ok`、best epoch `20`、sampled-val macro-F1 `0.3355`、accuracy `0.5785`、MAE `0.5805`；seed44 `status=ok`、early stop 后 best epoch `15`、sampled-val macro-F1 `0.3521`、accuracy `0.5995`、MAE `0.5780`。三 seed checkpoint/manifest 均验证非空且 `json.tool` 通过。deterministic full-val macro-F1：w=0.10 distill seed42/43/44=`0.3223/0.3268/0.3255`，均值 `0.3249±0.0023`；test macro-F1=`0.3226/0.3317/0.3332`，均值 `0.3292±0.0057`，test accuracy `0.5894±0.0049`。对比无蒸馏 full-step full-val macro-F1=`0.3172/0.3251/0.3274`，蒸馏均值只从约 `0.3232` 到 `0.3249`，提升很小且 seed44 下降。结论：w=0.10 expected-score distillation 信号存在但不稳定，不能作为主线突破。
 - [2026-06-14 16:24:38 CST] 完成 distillation w=0.20 seed42 full-step 快速复核：在 `gpu10` 物理 GPU0 上运行同一 full-step 配置，仅将 `distill_weight` 从 `0.10` 提高到 `0.20`；训练 `status=ok`、20/20 epoch、best epoch `17`、sampled-val macro-F1 `0.3472`、accuracy `0.6023`、MAE `0.5414`，checkpoint_best/last 非空且 manifest 通过。随后 deterministic full-val 评估：macro-F1 `0.3249`、accuracy `0.5887`、MAE `0.5664`、Spearman `0.2639`。相比 w=0.10 seed42 full-val macro-F1 `0.3223` 只有小幅提升，仍明显低于 SNP-MLP alpha0.4/0.6 多 seed均值；下一步若继续蒸馏，应补 w=0.20 seed43/44 或改用概率分布 KL/teacher logits，而不是只依赖 expected-score MSE。
 - [2026-06-14 16:51:59 CST] 完成终版训练复核：distillation w=0.20 full-step seed43/44 已在 `gpu10` 物理 GPU0 跑完，三 seed checkpoint/manifest 均通过 `json.tool` 与非空 checkpoint 检查；随后用 deterministic evaluator 对 w=0.20 seed42/43/44 做 full-val 与 test role 评估。full-val macro-F1=`0.3249/0.3252/0.3283`，均值 `0.3262±0.0019`；full-val accuracy=`0.5887/0.5903/0.5855`，MAE=`0.5664/0.5702/0.5791`。test macro-F1=`0.3209/0.3234/0.3311`，均值 `0.3251±0.0054`；test accuracy=`0.5887/0.5887/0.5945`，MAE=`0.5926/0.5926/0.5862`。对比无蒸馏 full-step test macro-F1 均值 `0.3229±0.0062`，w=0.20 只小幅提高到 `0.3251±0.0054`；对比 w=0.10 test 均值 `0.3292±0.0057`，w=0.20 反而略低。终版结论：当前可冻结的 RiceGeneFormer 最佳训练族是 `gated top-SNP fusion + balanced alpha0.25 + macro-F1 selection + optional expected-score distillation`；但 expected-score MSE 蒸馏收益很小且不稳定，最终报告不应宣称其为主要突破。正式性能表应同时报告无蒸馏 full-step、w=0.10、w=0.20、以及强 SNP-MLP alpha0.4–0.6 baseline，强调 RiceGeneFormer 已接近 tree baseline、仍低于强 top-SNP MLP baseline。
+- [2026-06-14 17:15:49 CST] 完成文章写作启动包：新增 `docs/MANUSCRIPT_STARTER.md`，把终版训练结果整理成可直接开始写作的论文控制文档。内容包括：一语句核心论点、术语表、paper-ready claims 与 evidence、主结果表、RiceGeneFormer/LightGBM/XGBoost/SNP-MLP 对比、ablation 结论边界、标题候选、摘要骨架、Results/Methods/Discussion scaffold、figure/table plan、Data/Code Availability 待补项和投稿前缺口。写作定位已冻结为“benchmark-and-methods paper”，而不是“deep model beats all baselines paper”：核心贡献是 leakage-aware 3K Rice ordinal G2P benchmark + gene-aware OMTL framework；诚实边界是当前 RiceGeneFormer 接近 tree baseline，但仍低于强 top-SNP SNP-MLP baseline。该文档只包含轻量分析与文本，不包含数据、日志、权重或预测文件。
 
 ## 8. 下一步执行优先级
 
 1. 不再把当前 chr / prefix random / STRING / fusion 的轻量 GraphEncoder 结果解释为图结构特异增益；若继续图方向，应转向 Plant Reactome/KEGG pathway、co-expression atlas，或重新设计 relation-aware graph encoder。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. 终版 full-step 训练已完成并复核：无蒸馏 test macro-F1 `0.3229±0.0062`，w=0.10 expected-score distillation `0.3292±0.0057`，w=0.20 `0.3251±0.0054`。简单 expected-score MSE 蒸馏只有小幅、不稳定收益；后续若继续提升，应改为概率分布 KL/teacher-logit 或结构化 teacher fusion，而不是继续加大当前蒸馏权重。
+4. 已具备开始写文章的最低条件：终版训练、deterministic val/test、强 baseline、多类消融和写作启动包均已完成。下一步写作应从 `docs/MANUSCRIPT_STARTER.md` 的 Results 和 Methods scaffold 开始；投稿前仍需补 per-trait final metrics、trait class distribution、原始数据 accession/URL 核对、figure-ready architecture diagram 与数据/代码仓库策略。
