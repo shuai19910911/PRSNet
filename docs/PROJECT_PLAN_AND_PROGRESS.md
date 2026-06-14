@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 08:35:03 CST
+最后更新：2026-06-14 08:40:51 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -196,11 +196,12 @@ baseline + ablation：2–5 天
 - [2026-06-14 08:05:10 CST] Cron 再次复核 Phase 5 model-input smoke 与 GPU 可用性：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中已无活动作业），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，输出 manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。登录节点 `PRSNet` 环境可导入 CUDA 版 PyTorch（`torch=2.6.0+cu124`、CUDA build `12.4`），但本机无 GPU；再次尝试 `ssh gpu10` 执行 `hostname/nvidia-smi/torch.cuda` 检查在 45 秒内超时并被终止，因此本 tick 仍未启动 STRING graph GPU pilot。仅更新 docs 轻量进展并准备推送到 GitHub；数据、日志、脚本、模型权重继续保留本地不上传。
 - [2026-06-14 08:24:12 CST] Cron 复核 Phase 5 model-input smoke 并完成最小 CUDA smoke：`squeue -j 8562921` 返回队列中无活动作业，`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。`PRSNet` 环境为 CUDA 版 PyTorch（`torch=2.6.0+cu124`、CUDA build `12.4`）；本轮 `ssh gpu10` 成功，确认物理 GPU0 为 A100-40GB 且空闲约 3 MiB。随后在 `gpu10` 物理 GPU0 上运行最小 RiceGeneFormer-OMTL CUDA forward/backward smoke（batch=4、genes=256、max_snps_per_gene=32、hidden_dim=64），输出 `status=ok`、`cuda_available=true`、`logit_shape=4x35`、loss `4.5322`、grad_norm `22.9060`；产物在本地数据区 `data/3krice/processed/rice_geneformer_omtl_smoke_gpu0_cron_20260614_0824/`，不上传 GitHub。代码侧复核 `py_compile`、SLURM `sh -n`、`git diff --check` 均通过；本 tick 仅推送 docs 轻量进展。
 - [2026-06-14 08:35:03 CST] 用户询问“接下来怎么做”后按自动执行模式直接推进 STRING rice graph GPU pilot：先确认 `gpu10` 可达且物理 GPU0 为 A100-40GB、空闲约 3 MiB；随后在 `gpu10` 物理 GPU0 上运行 `string_v12_min700_top20` + top512 + trait_attention + GraphEncoder 对齐 15 epoch bounded pilot（genes=2048、max_snps_per_gene=32、hidden_dim=64、batch=16、50 steps/epoch、early_stop_patience=5、lr=2e-4、seed=42，PyTorch `2.6.0+cu124`）。运行完成 `status=ok`、`graph_edges_used=416`、15/15 epoch、best epoch `11`、best val loss `0.3782`、final val loss `0.3914`、accuracy `0.5685`、MAE `0.5916`、macro-F1 `0.2826`、Spearman `0.2066`；`training_manifest.json` 通过 `json.tool`，`checkpoint_best.pt`/`checkpoint_last.pt` 分别约 1.19 MB（本地数据区 `data/3krice/processed/rice_geneformer_omtl_train_graph_string_top512_seed42_e15_g2048_b16_s50/`，不上传 GitHub）。初步对比：STRING graph seed42 优于无 GraphEncoder 原 top512 trait_attention（best val loss `0.3821`、macro-F1 `0.2707`），但略低于等边 prefix random seed42（best val loss `0.3765`、macro-F1 `0.2844`），且在前 2,048 genes 仅使用 416 条边；下一步应补 seed43/44 或构建前缀边数更充分的 STRING/STRING+chr 融合图，再判断外部 biological graph 是否有稳定增益。
+- [2026-06-14 08:40:51 CST] 继续自动补齐 STRING graph seed43/44 对齐复跑：在 `gpu10` 物理 GPU0 上顺序运行 `string_v12_min700_top20` + top512 + trait_attention + GraphEncoder（genes=2048、max_snps_per_gene=32、hidden_dim=64、batch=16、15 epoch、50 steps/epoch、early_stop_patience=5）。seed43：`status=ok`、`graph_edges_used=416`、best epoch `12`、best val loss `0.3770`、final val loss `0.3827`、accuracy `0.5845`、MAE `0.5776`、macro-F1 `0.2653`、Spearman `0.2532`；seed44：`status=ok`、`graph_edges_used=416`、early stop 于 14 epoch、best epoch `9`、best val loss `0.3767`、final val loss `0.3926`、accuracy `0.5734`、MAE `0.6009`、macro-F1 `0.2769`、Spearman `0.2041`。三组 STRING manifest 均通过 `json.tool` 且 best/last checkpoint 非空。综合 seed42/43/44：STRING best val loss 接近 chr/random GraphEncoder，但 macro-F1 不稳定且前缀子图边数仅 416，暂不能宣称 STRING 外部生物图谱有稳定优势；下一步应构建 STRING+chr 融合图或放宽 STRING 阈值/拓扑选择以提升 bounded subset 边覆盖，再重做对照。
 
 ## 8. 下一步执行优先级
 
-1. 对 `string_v12_min700_top20` 补 seed43/44 对齐复跑，判断 STRING graph 相对 chr-neighbor / prefix random 的增益是否稳定。
-2. 若 STRING 前 2,048 genes 边数仍过少，构建 STRING+chr 融合图或放宽 STRING top/score 阈值，让外部 biological graph 在 bounded gene subset 中有足够 message passing 边。
+1. 构建 STRING+chr 融合图或放宽 STRING top/score 阈值，让外部 biological graph 在前 2,048 genes bounded subset 中有足够 message passing 边，再与 chr-neighbor / prefix random 对齐比较。
+2. 对融合图跑 seed42/43/44 bounded pilot，若仍无优势，则转向 Plant Reactome/KEGG pathway、co-expression atlas。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 的 seed42 对齐消融；指标近似持平，暂不作为主瓶颈继续深挖。
 4. 已完成 SNP-MLP baseline 初版；下一步可补 early stopping / dropout / weight decay 网格以判断过拟合是否可控。
 5. 继续构建 Plant Reactome/KEGG pathway、co-expression atlas 等外部 biological graph；后续补充 body-only、±2kb、±10kb、nearest-gene 的 SNP-to-gene mapping 消融版本。
