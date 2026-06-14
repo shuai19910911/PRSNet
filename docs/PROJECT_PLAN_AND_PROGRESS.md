@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 20:01:59 CST
+最后更新：2026-06-14 20:19:47 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -241,6 +241,7 @@ baseline + ablation：2–5 天
 - [2026-06-14 19:43:01 CST] 按用户要求继续不停窗自主推进：扩写 `docs/MANUSCRIPT_DRAFT.md` 的 Methods 部分，将 Dataset processing、train-fold GWAS priors、SNP-to-gene mapping/graph construction、RiceGeneFormer-OMTL architecture、Training/model selection、Baselines、Distillation 全部从 bullet scaffold 改为可编辑英文正文；新增 `docs/MAIN_RESULTS_TABLE.md`，整理最终 RiceGeneFormer、LightGBM、XGBoost、SNP-MLP top-SNP baseline 的主结果表、指标定义和谨慎措辞边界。当前写作包已从 scaffold 进入 Results+Methods prose draft 阶段；后续优先补 Introduction prose 与 final submission gaps（baseline test role 对齐、per-trait baseline、exact license/release）。
 - [2026-06-14 19:44:55 CST] 继续补齐 manuscript prose：将 `docs/MANUSCRIPT_DRAFT.md` 的 Introduction 从 paragraph jobs 改为 5 段可编辑英文正文，采用 field scale → bottleneck → modeling gap → present study → bounded contribution 的结构；将 Discussion 从 bullet scaffold 扩写为 main message、biological/modeling interpretation、limitations、future work 四段式正文，重点强调当前贡献边界：RiceGeneFormer 是 leakage-aware ordinal benchmark + gene-aware model family，不宣称超过所有 top-SNP baselines。更新 immediate checklist，当前 Introduction/Results/Methods/Discussion 均已有 prose draft。
 - [2026-06-14 20:01:59 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 已无活动记录（`Invalid job id specified`），`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练作业；同时复核近期 deterministic test/evaluation 作业 `8563024`、`8563025` 均为 `COMPLETED|0:0`，继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、模型权重不上传。
+- [2026-06-14 20:19:47 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前写作包已包含 Introduction/Results/Methods/Discussion prose、主结果表、per-trait 表、class distribution、citation-control 与 figure legends；本 tick 未新增训练或数据产物，仅同步 docs 轻量进展。
 
 ## 8. 下一步执行优先级
 
