@@ -1,0 +1,4 @@
+distillation_weight,test_macro_f1_mean,test_macro_f1_sd
+none,0.3229,0.0062
+w=0.10,0.3292,0.0057
+w=0.20,0.3251,0.0054

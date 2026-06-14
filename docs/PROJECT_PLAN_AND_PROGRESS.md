@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 22:04:21 CST
+最后更新：2026-06-14 22:24:18 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -252,10 +252,12 @@ baseline + ablation：2–5 天
 - [2026-06-14 21:25:35 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回队列中无活动作业，`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、权重和二进制产物不上传。
 - [2026-06-14 21:44:55 CST] Cron 例行复核并完成投稿策略文档同步准备：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮确认 `gpu10` 可达，物理 GPU2 空闲约 1.0 GB/40 GB 已用，但当前任务进入写作/投稿策略阶段，未新启训练。新增/保留轻量 `docs/BIB_NC_SUBMISSION_STRATEGY.md`，明确当前稿件更适合按 BIB 风格定位为 leakage-aware ordinal G2P benchmark；Nature Communications 需补 cross-region robustness 或 gene/QTL biological interpretation 后再考虑。准备仅推送 docs 文本、SVG、CSV/TSV/JSON source-data，继续不上传数据、日志、脚本、权重、PDF/TIFF 二进制。
 - [2026-06-14 22:04:21 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 已无活动记录（`Invalid job id specified`），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境仍存在且 CUDA 版 PyTorch 已在前序 tick 验证可用；当前仓库已有最小 RiceGeneFormer-OMTL dataloader/model smoke 与 SLURM wrapper，并已在前序记录中完成 CPU/GPU smoke、静态检查和独立复审。本轮未新增训练/数据产物，也未上传数据、日志、脚本、权重或二进制文件；仅准备同步 docs 轻量进展。
+- [2026-06-14 22:08:52 CST] 按 BIB/NC 重新设计方案后自行执行 cross-region deterministic benchmark：已完成 3 个 held-out region（Southeast_Asia、South_Asia、East_Asia）的 LightGBM、XGBoost、SNP-MLP alpha0.40/0.60 与 RiceGeneFormer gated alpha0.25 对齐评估。CPU baseline 总结写入 `data/3krice/processed/region_shift_baseline_summary_region_manual_20260614_213808.tsv`；RiceGeneFormer 在 `gpu10` 物理 GPU2 上运行 seed42/43/44，结果写入 `data/3krice/processed/region_shift_rice_geneformer_summary_region_rgf_manual_20260614_214252.tsv`。新增轻量结果文档 `docs/REGION_SHIFT_BENCHMARK_RESULTS.md`。结论：三个 region 中最强 macro-F1 均为 SNP-MLP alpha0.60；RiceGeneFormer macro-F1 分别为 Southeast_Asia `0.2438±0.0106`、South_Asia `0.2327±0.0064`、East_Asia `0.2693±0.0141`，未显示 cross-region robustness 优势。因此 NC 的 cross-region robustness 路线当前不成立；BIB 仍可按 leakage-aware benchmark/diagnostic framework 定位，下一步应优先做 gene/QTL biological interpretation，而不是继续宣称分布偏移鲁棒性。
+- [2026-06-14 22:24:18 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`（CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常）。本轮未新增训练/数据产物；仅准备同步 docs 轻量进展，继续不上传数据、日志、脚本、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
-1. 不再把当前 chr / prefix random / STRING / fusion 的轻量 GraphEncoder 结果解释为图结构特异增益；若继续图方向，应转向 Plant Reactome/KEGG pathway、co-expression atlas，或重新设计 relation-aware graph encoder。
+1. cross-region deterministic benchmark 已完成且不支持 RiceGeneFormer 分布偏移鲁棒性优势；Nature Communications 只剩 gene/QTL biological interpretation 或外部数据泛化两条可能路线，当前主投稿目标应优先收敛到 BIB。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
 4. 已具备正式写文章条件：终版训练、deterministic val/test、强 baseline、多类消融、per-trait metrics、trait class distribution、写作启动包与英文初稿骨架均已完成。下一步直接扩写 `docs/MANUSCRIPT_DRAFT.md` 的 Results/Methods 正文，并同步制作 Figure 1 workflow 与 Figure 2 architecture；投稿前仍需核对原始数据 accession/URL 与数据/代码仓库策略。

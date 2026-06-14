@@ -1,0 +1,6 @@
+method,traits_best_by_macro_f1
+RiceGeneFormer + distill w=0.10,1
+LightGBM top512,1
+XGBoost top512,1
+SNP-MLP top512 alpha0.40,3
+SNP-MLP top512 alpha0.60,4
