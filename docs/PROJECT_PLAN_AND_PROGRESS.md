@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 17:43:23 CST
+最后更新：2026-06-14 19:05:20 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -236,6 +236,7 @@ baseline + ablation：2–5 天
 - [2026-06-14 17:15:49 CST] 完成文章写作启动包：新增 `docs/MANUSCRIPT_STARTER.md`，把终版训练结果整理成可直接开始写作的论文控制文档。内容包括：一语句核心论点、术语表、paper-ready claims 与 evidence、主结果表、RiceGeneFormer/LightGBM/XGBoost/SNP-MLP 对比、ablation 结论边界、标题候选、摘要骨架、Results/Methods/Discussion scaffold、figure/table plan、Data/Code Availability 待补项和投稿前缺口。写作定位已冻结为“benchmark-and-methods paper”，而不是“deep model beats all baselines paper”：核心贡献是 leakage-aware 3K Rice ordinal G2P benchmark + gene-aware OMTL framework；诚实边界是当前 RiceGeneFormer 接近 tree baseline，但仍低于强 top-SNP SNP-MLP baseline。该文档只包含轻量分析与文本，不包含数据、日志、权重或预测文件。
 - [2026-06-14 17:42:34 CST] 补齐正式写作前的轻量结果表和初稿骨架：新增 `docs/FINAL_PER_TRAIT_METRICS_RGF_W010_TEST.tsv`、`docs/CORE_TRAIT_CLASS_DISTRIBUTION.tsv`、`docs/FINAL_PER_TRAIT_SUMMARY.md` 和 `docs/MANUSCRIPT_DRAFT.md`。per-trait 表基于当前 RiceGeneFormer 最佳 test 变体（w=0.10 expected-score distillation，seeds 42/43/44，deterministic test role）重新从 checkpoints 计算；例如 CUDI_CODE_REPRO macro-F1 `0.639±0.019`、CULT_CODE_REPRO `0.218±0.026`、CUST_REPRO `0.130±0.006`、PTH `0.450±0.015`，说明最终 macro-F1 主要受多类/强不平衡 trait 限制。class distribution 表按 train/val/test 输出每个 core trait 的 observed samples 与 class counts。`MANUSCRIPT_DRAFT.md` 已给出可直接扩写的英文 Abstract placeholder、Introduction paragraph jobs、Results 六段证据链、Methods scaffold 和 Discussion 边界。至此已经不只是“可以开始写文章”，而是已有可编辑初稿骨架；后续应进入正式撰写 Results/Methods 正文和作图。
 - [2026-06-14 17:43:23 CST] Cron 例行复核 Phase 5 输入 smoke 作业 `8562921`：`squeue` 已无活动记录，`sacct` 仍为 `COMPLETED|0:0|00:00:08`；manifest/report 再次确认 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。同时复核最小 RiceGeneFormer-OMTL smoke 代码：修补 split 全角色 disjointness 检查，`py_compile`、SLURM `sh -n`、静态扫描、CPU smoke 和独立代码复审均通过；本机 SLURM 不暴露 GPU 分区（`sinfo` 仅见 `cu/fat/q03/q04/q05/q07/q08`，`sbatch -p gpu10` 返回 invalid partition），因此未通过 SLURM 新提交 GPU smoke。数据、日志、脚本和权重仍只保留本地；GitHub 仅同步 docs 轻量进展。
+- [2026-06-14 19:05:20 CST] Cron 再次复核 Phase 5 输入 smoke 作业 `8562921`：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 仍满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境已是 CUDA 版 PyTorch（`torch=2.6.0+cu124`、CUDA build `12.4`；登录节点 `cuda_available=False` 属正常无 GPU），最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`logit_shape=2x35`、loss finite、grad_norm positive）。按独立代码复审意见补强 smoke 脚本：新增 smoke-only 上限（batch≤16、genes≤1024、SNP/gene≤128、hidden≤256）、JSON `allow_nan=False`、SLURM wrapper 中 Python/env-lib 存在性检查；随后 `py_compile`、`sh -n`、bounded 参数失败测试、`json.tool`、静态安全扫描、`git diff --check` 与独立复审均通过。当前 SLURM 仍不暴露 GPU 分区（`sbatch --test-only -p gpu10` 返回 invalid partition），`ssh gpu10` 检查 45 秒超时，因此本 tick 未新启动 GPU smoke；仅同步 docs 轻量进展，不上传数据/日志/脚本/权重。
 
 ## 8. 下一步执行优先级
 
