@@ -1,0 +1,16 @@
+{
+  "backend": "Python/matplotlib",
+  "editable_text": true,
+  "exported_formats": [
+    "svg",
+    "pdf",
+    "tiff"
+  ],
+  "figures": [
+    "figs1_per_trait_method_comparison"
+  ],
+  "source_data": [
+    "docs/figure_source_data/figs1_per_trait_method_comparison.csv",
+    "docs/figure_source_data/figs1_best_method_counts.csv"
+  ]
+}
