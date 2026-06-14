@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 00:50:28 CST
+最后更新：2026-06-15 01:45:06 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -267,6 +267,7 @@ baseline + ablation：2–5 天
 - [2026-06-15 00:28:03 CST] Cron 例行复核 Phase 5 输入 smoke 与环境状态：`squeue -j 8562921` 仍返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` mamba 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`（CUDA build `12.4`；登录节点无 GPU 所以 `cuda_available=False` 正常）。当前项目主线已进入 BIB benchmark/diagnostic 写作与 release 准备阶段；本轮只更新 docs 轻量进展，不新增训练、不上传数据/日志/脚本/权重/二进制文件。
 - [2026-06-15 00:48:11 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境 PyTorch 为 CUDA 版 `2.6.0+cu124`（登录节点无 GPU所以 `cuda_available=False` 正常）；最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`logit_shape=2x35`、loss finite、grad_norm positive）。本轮未新增训练作业；仅更新并准备同步 docs 轻量进展，继续不上传数据、日志、脚本、权重或二进制文件。
 - [2026-06-15 00:50:28 CST] GPU smoke 启动条件复核：`sinfo` 当前仍只暴露 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`；`sbatch --test-only -p gpu10 -c 4 --mem=24G --gres=gpu:1 scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 返回 `invalid partition specified: gpu10`。同时 `ssh gpu10` 检查在 45 秒内超时并被终止，因此本 tick 未提交新的 GPU smoke/训练作业。继续保持仅同步 docs 轻量进展，数据、日志、脚本、权重和二进制产物不上传 GitHub。
+- [2026-06-15 01:45:06 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` mamba 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`（CUDA build `12.4`；登录节点无 GPU所以 `cuda_available=False` 正常）。本轮未新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、权重或二进制文件。
 
 ## 8. 下一步执行优先级
 
