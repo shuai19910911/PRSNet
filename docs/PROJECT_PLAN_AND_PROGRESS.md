@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 23:39:51 CST
+最后更新：2026-06-15 00:08:04 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -263,6 +263,7 @@ baseline + ablation：2–5 天
 - [2026-06-14 23:09:49 CST] 准备 BIB submission package 并压缩主摘要：新增 `docs/BIB_SUBMISSION_PACKAGE.md`，包含推荐题目、4 个备选题目、BIB-ready abstract、key points、keywords、one-sentence contribution、claim-evidence map 与 missing-before-submission list。同步更新 `docs/MANUSCRIPT_DRAFT.md` 的 working title 和 abstract，改为 270-word BIB-ready draft，明确 RiceGeneFormer 是 reproducible diagnostic framework，而不是 neural superiority、robustness 或 biological-discovery claim。
 - [2026-06-14 23:11:20 CST] 生成短版图注 `docs/FIGURE_LEGENDS_SHORT.md`：按 BIB 投稿插入文本压缩 Figure 1-4 与 Supplementary Figure 1 图注，保留关键指标和 Figure 4 的 diagnostic negative-control 边界说明；source data 路径已改用 `docs/source_data/` 中的可公开轻量文件。检查显示 Figure 1/2/3 图注约 108/114/111 words，Figure 4 因包含 region-shift 与 gene-attention 边界约 205 words。
 - [2026-06-14 23:39:51 CST] 继续执行 BIB reviewer-risk audit：新增 `docs/BIB_REVIEWER_RISK_AUDIT.md`，按 contribution、baseline gap、robustness、gene attention、graph advantage、leakage、metric choice、data/code DOI、citation/source formatting 和 source-data consistency 梳理 likely reviewer concerns、current evidence、manuscript action 与 status；同步更新 `docs/MANUSCRIPT_DRAFT.md` 的 writing checklist，标记 BIB package、short figure legends、reviewer-risk audit 已 ready。完成 overclaim regex scan，命中均为“不得宣称 state-of-the-art / breakthrough / biological validation”等负向或边界上下文，未发现需要立刻改写的过度主张。
+- [2026-06-15 00:08:04 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练/数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、权重或二进制文件。
 
 ## 8. 下一步执行优先级
 
