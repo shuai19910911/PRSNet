@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 15:36:24 CST
+最后更新：2026-06-14 15:48:07 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -226,10 +226,11 @@ baseline + ablation：2–5 天
 
 - [2026-06-14 15:28:19 CST] Cron 完成 full-step RiceGeneFormer checkpoint 阈值校准复核：复核 Phase 5 输入 smoke 作业 `8562921` 仍为 `COMPLETED|0:0|00:00:08`，manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、10 core traits、graph `34139` nodes / `341030` directed edges、random split train/val/test=`1586/340/340`。随后在 `gpu10` 物理 GPU0 上对 full-step gated alpha0.25 + macro-F1 selection 的 seed42/43/44 best checkpoints 做 train→val post-hoc scalar threshold calibration；三组均 `status=ok`，`calibration_manifest.json` 可由 `json.tool` 解析，`thresholds.tsv` 非空，输出仅在本地数据区 `data/3krice/processed/rice_geneformer_calibration_fullsteps_seed{42,43,44}_train_to_val/`（不上传 GitHub）。结果：未校准 val macro-F1 均值 `0.3232±0.0054`、accuracy `0.5828±0.0024`、MAE `0.5902±0.0010`；train-calibrated 后 val macro-F1 `0.3145±0.0029`、accuracy `0.5555±0.0051`、MAE `0.6332±0.0141`。结论：full-step checkpoint 的 train-calibrated 阈值没有提升 val macro-F1，反而降低 accuracy/MAE；阈值校准暂不作为主结果，只保留为可解释/后处理工具。下一步应转向强 SNP baseline 对齐下的模型融合/蒸馏或更直接的少数类目标，而不是继续做简单阈值校准。
 - [2026-06-14 15:36:24 CST] 实现 deterministic full-role checkpoint evaluator：新增本地未跟踪脚本 `scripts/model/evaluate_rice_geneformer_checkpoint.py`，加载可信 processed_dir 内 RiceGeneFormer checkpoint，按 role=`train|val|test` 遍历全部样本，不再使用训练循环中的随机 sampled validation，输出 `evaluation_manifest.json`。验证：`py_compile` 通过；CPU smoke 评估 full-step seed42 val role 输出 `status=ok`、samples `340`、observed labels `3146`、macro-F1 `0.3172`；manifest 通过 `json.tool`；静态扫描仅 `model.eval()` 假阳性；独立代码复审通过。随后对 full-step seed42/43/44 best checkpoints 做 deterministic val 评估：macro-F1=`0.3172/0.3251/0.3274`、accuracy=`0.5801/0.5833/0.5849`、MAE=`0.5893/0.5900/0.5912`、Spearman=`0.2458/0.2536/0.2633`。结论：正式 full-val 口径低于 sampled-val best 指标，后续所有与 SNP-MLP/LightGBM 的主比较应以 deterministic evaluator 为准。
+- [2026-06-14 15:48:07 CST] 实现并验证 SNP-MLP teacher prediction export：在本地未跟踪脚本 `scripts/model/baseline_snp_mlp_core_smoke.py` 增加 `--export-predictions`，默认关闭以保持历史行为；启用后在 best_state 模型上导出 train/val/test 的纯 numeric `.npz`，包含 `sample_index`、`teacher_prob`、`teacher_prob_mask`、`teacher_pred`、`teacher_expected_score`、`y`、`mask`，并在 manifest 中记录每个 role 的 path/samples/observed_labels。验证：`py_compile` 通过；tiny CPU smoke 输出 train/val/test NPZ shapes 分别为 `(1586,10,8)/(340,10,8)/(340,10,8)`；manifest 通过 `json.tool`；静态扫描仅 `model.eval()` 假阳性；独立代码复审通过。随后用 alpha0.40、seed42、top512、balanced SNP-MLP 训练并导出 teacher：`status=ok`、val macro-F1 `0.3430`、accuracy `0.6266`、MAE `0.5641`；导出 train/val/test teacher predictions 均完成，输出仅在本地数据区 `data/3krice/processed/snp_mlp_teacher_alpha040_seed42_export/`。结论：teacher export 通路已可用，下一步可以把 `teacher_expected_score` 接入 RiceGeneFormer 的蒸馏损失先做最小验证。
 
 ## 8. 下一步执行优先级
 
 1. 不再把当前 chr / prefix random / STRING / fusion 的轻量 GraphEncoder 结果解释为图结构特异增益；若继续图方向，应转向 Plant Reactome/KEGG pathway、co-expression atlas，或重新设计 relation-aware graph encoder。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. gated fusion + balanced alpha0.25 + macro-F1 selection 是当前最佳 RiceGeneFormer 神经主线；deterministic full-val evaluator 已实现并验证，full-step seed42/43/44 macro-F1=`0.3172/0.3251/0.3274`，低于 SNP-MLP balanced alpha0.4–0.6 的多 seed macro-F1 约 `0.350–0.354`。full-step checkpoint 的 train→val 阈值校准已复核，未提升 val macro-F1 且降低 accuracy/MAE；下一步优先尝试强 SNP baseline 对齐下的融合/蒸馏或更直接的少数类目标。
+4. gated fusion + balanced alpha0.25 + macro-F1 selection 是当前最佳 RiceGeneFormer 神经主线；deterministic full-val evaluator 与 SNP-MLP teacher export 均已实现并审核通过。下一步优先把 alpha0.40 SNP-MLP 的 `teacher_expected_score` 接入 RiceGeneFormer 蒸馏损失，先做 seed42 的 distill_weight 小网格。
