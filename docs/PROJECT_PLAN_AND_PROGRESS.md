@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 11:56:28 CST
+最后更新：2026-06-14 12:05:05 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -211,10 +211,11 @@ baseline + ablation：2–5 天
 - [2026-06-14 11:39:03 CST] 继续自动推进 macro-F1-aware checkpoint selection：`rice_geneformer_omtl_train.py` 新增 `--selection-metric val_loss|val_macro_f1`，默认 `val_loss` 保持历史行为；当选择 `val_macro_f1` 时按越大越好保存 `checkpoint_best.pt` 并驱动 early stopping，manifest 同时记录 `best_selection_score`、best_* 与 final_* 指标，避免把最后 epoch 误认为最佳 epoch。验证：`py_compile`、`--selection-metric val_macro_f1` CPU smoke、manifest `json.tool`、checkpoint_best/last 非空、静态扫描和独立代码复审均通过。随后在 `gpu10` 物理 GPU0 上运行 top512 + trait_attention + GraphEncoder seed42 对齐 pilot（未加权 loss，只改变 checkpoint/model-selection 指标）：`status=ok`、selection_metric=`val_macro_f1`、best epoch `14`、best selection score / best macro-F1 `0.2865`、best val loss `0.3880`、best accuracy `0.5776`、best MAE `0.5831`、best Spearman `0.2321`；final epoch macro-F1 `0.2854`、final loss `0.3920`。结论：macro-F1-aware selection 只带来小幅 macro-F1 选择收益，不能突破当前神经模型上限；下一步应直接改 top-SNP 与 gene-token 融合结构，而不是继续调 selection/loss。
 - [2026-06-14 11:50:32 CST] 继续自动推进 top-SNP + gene-token 融合结构：`rice_geneformer_omtl_train.py` 新增 `--top-snp-fusion add|gated`，默认 `add` 保持历史行为；`gated` 模式将 top-SNP encoder 输出扩展到每个 trait，用 `sigmoid(Linear([trait_token, top_snp_token]))` 学习门控，再 `LayerNorm(trait_token + gate * top_snp_token)`，避免原先无条件把同一个 top-SNP token 加到所有 trait。验证：`py_compile`、gated+top_snp_count=16 CPU smoke、gated+top_snp_count=0 CPU smoke、manifest `json.tool`、静态扫描和独立代码复审均通过。随后在 `gpu10` 物理 GPU0 上运行 top512 + trait_attention + GraphEncoder seed42 gated pilot：`status=ok`、best epoch `11`、best val loss `0.3734`、best accuracy `0.6031`、best MAE `0.5522`、best macro-F1 `0.2823`、best Spearman `0.2037`；final val loss `0.3807`、final accuracy `0.5841`、final macro-F1 `0.2786`。结论：gated top-SNP 融合明显改善 val loss/accuracy/MAE，相比原 add 主线 best val loss `0.3821` 更低、accuracy 更高，但 macro-F1 仍未突破；该方向值得继续做多 seed 和与 SNP-MLP balanced baseline 的组合评估。
 - [2026-06-14 11:56:28 CST] 补齐 gated top-SNP fusion seed43/44：继续在 `gpu10` 物理 GPU0 上运行同一 top512 + trait_attention + GraphEncoder gated 配置。seed43：`status=ok`、best epoch `15`、best val loss `0.3715`、best accuracy `0.6037`、best MAE `0.5618`、best macro-F1 `0.2826`、best Spearman `0.2687`；seed44：`status=ok`、best epoch `15`、best val loss `0.3727`、best accuracy `0.5860`、best MAE `0.5820`、best macro-F1 `0.2624`、best Spearman `0.2173`。三 seed manifest 均通过 `json.tool`，checkpoint_best/last 均非空约 1.55 MB。综合 seed42/43/44：gated fusion 的 best val loss 稳定在 `0.3715–0.3734`，优于原 add/fusion/mapping 等多数神经 pilot；accuracy 可到 `0.586–0.604`，但 macro-F1 仍在 `0.262–0.283`，说明 gated top-SNP fusion 是当前提升 accuracy/loss 的有效结构，但少数类预测仍需单独处理。
+- [2026-06-14 12:05:05 CST] 尝试 gated fusion + mild class-balanced loss：在 gated top-SNP fusion seed42 上叠加 `--loss-weighting balanced --balance-alpha 0.25`，训练完成 `status=ok`，manifest 通过 `json.tool`，checkpoint_best/last 均非空约 1.55 MB。按默认 val_loss 选择的 best epoch `13`：best val loss `0.3856`、accuracy `0.5863`、MAE `0.5755`、macro-F1 `0.2786`、Spearman `0.1619`；但 metrics 中 epoch `12` 的 macro-F1 达到 `0.3101`（val loss `0.3886`、accuracy `0.5910`、MAE `0.5807`、Spearman `0.2508`），final epoch macro-F1 `0.2981`。结论：轻度 balanced loss 会牺牲 gated fusion 的 best val loss/accuracy，但显著改善少数类 macro-F1 的峰值；下一步已启动同配置 `--selection-metric val_macro_f1` 复跑，用 macro-F1 保存最佳 checkpoint，而不是按 val_loss 错过 epoch12。
 
 ## 8. 下一步执行优先级
 
 1. 不再把当前 chr / prefix random / STRING / fusion 的轻量 GraphEncoder 结果解释为图结构特异增益；若继续图方向，应转向 Plant Reactome/KEGG pathway、co-expression atlas，或重新设计 relation-aware graph encoder。
 2. SNP-MLP class-balanced alpha 网格显示 alpha `0.50` 是当前较好折中（macro-F1 `0.3563`、accuracy `0.6177`）；下一步优先围绕 alpha `0.4–0.6` 做多 seed，或把 class-balanced/ordinal 混合目标迁移回 RiceGeneFormer。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. gated top-SNP fusion 的多 seed val loss/accuracy 改善稳定，但 macro-F1 未突破；下一步叠加更温和的 class-balanced/SNP-MLP 监督信号或做两阶段校准。
+4. gated fusion + mild balanced alpha0.25 出现 macro-F1 峰值 `0.3101`；下一步优先用 macro-F1 selection 保存该类 checkpoint，再做 seed43/44 复核。
