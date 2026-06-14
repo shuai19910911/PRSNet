@@ -121,33 +121,31 @@ The total training loss was the ordinal multi-task loss plus a weighted distilla
 
 ### Main message
 
-RiceGeneFormer provides a leakage-aware, gene-aware, ordinal multi-task benchmark for plant genotype-to-phenotype prediction. It approaches tree-based top-SNP performance but does not outperform strong balanced SNP-MLP baselines on the current 3K Rice random split.
+This study establishes RiceGeneFormer as a leakage-aware, gene-aware and ordinal multi-task framework for plant genotype-to-phenotype prediction. The final model approached tree-based top-SNP performance and improved when direct marker signal was fused through a learned gate, but it did not outperform strong balanced SNP-MLP baselines on the current 3K Rice random split. The central contribution is therefore not a claim of universal neural-model superiority. It is a benchmarked framework that makes the comparison between gene-aware architectures and strong marker-level baselines explicit, reproducible and bounded.
 
 ### Biological/modeling interpretation
 
-The results suggest that, in modest-sample plant phenotype panels, direct marker-level signal remains difficult for gene-token neural models to surpass. Gene-aware structure provides a principled modeling framework and interpretability hooks, but predictive superiority requires stronger graph encoders, better phenotype coverage, or improved teacher integration.
+The results suggest that direct marker-level signal remains difficult for gene-token neural models to surpass in modest-sample plant phenotype panels. Top-SNP baselines benefit from a short path between selected markers and phenotype labels, while gene-token models must compress many SNPs into gene representations before trait prediction. This compression can provide biological organization and interpretability hooks, but it may also dilute sparse predictive SNP signals when phenotype sample size is limited.
+
+The negative graph and mapping results should be interpreted as implementation-specific rather than biological evidence against gene structure. Chromosome-neighbor, STRING and fusion graphs were successfully integrated, but the lightweight mean-neighbor encoder did not yield a stable graph-specific advantage. A relation-aware encoder, better pathway coverage, stronger co-expression graphs or larger phenotype panels could change this conclusion. Similarly, the weak effect of SNP-to-gene window choice may reflect the dominance of the top-SNP branch and the bounded 2,048-gene training setting rather than true insensitivity to regulatory architecture.
+
+The class-balancing results highlight a second modeling tension. Increasing minority-class emphasis improved macro-F1 for SNP-MLP and for some RiceGeneFormer pilots, but stronger weighting reduced accuracy and ordinal MAE. This trade-off is expected for imbalanced descriptor phenotypes and should be reported rather than hidden. For breeding applications, the appropriate operating point may depend on whether the priority is majority-class screening accuracy, minority-class discovery or ordinal ranking fidelity.
 
 ### Limitations
 
-- Current claims use random split only as main result.
-- Cross-subpopulation/region generalization is not yet the main evidence.
-- Raw data citation and redistribution policy must be finalized.
-- Current GraphEncoder is lightweight and not relation-aware.
-- Expected-score distillation is weaker than probability/logit distillation could be.
+Several limitations define the current claim boundary. First, the main evidence uses a random split, while cross-subpopulation and cross-region generalization remain secondary or future analyses. Second, the phenotype panel is modest for deep multi-task learning, and several core traits have severe class imbalance or rare classes. Third, the current graph encoder is lightweight and not relation-aware, so it cannot test the full value of biological pathway or protein-association structure. Fourth, expected-score distillation uses a coarse teacher target; probability-level or logit-level distillation could transfer more information from SNP baselines. Finally, data-accession formatting, release provenance and redistribution policy still need to be finalized before submission.
 
 ### Future work
 
-- Relation-aware pathway/co-expression graph encoders.
-- KL/logit teacher distillation from strong SNP models.
-- Cross-region and cross-subpopulation tests.
-- Multi-environment maize/soybean transfer.
-- Larger phenotype panels and continuous trait integration.
+Future work should focus on tests that change the evidence boundary rather than small variants of the current pilots. The most direct extensions are cross-region and cross-subpopulation evaluation, relation-aware pathway or co-expression graph encoders, and probability-level teacher distillation from strong SNP models. Larger phenotype panels and multi-environment crop datasets would also test whether gene-aware ordinal multi-task learning becomes more advantageous when more supervised signal is available. In that setting, RiceGeneFormer can serve as a reusable scaffold for integrating marker effects, gene structure and trait-specific decoding across crop species.
 
 ## Immediate writing checklist
 
 Ready now:
+- Introduction prose draft.
 - Results prose draft.
 - Methods prose draft.
+- Discussion prose draft.
 - main performance numbers.
 - draft main results table in `docs/MAIN_RESULTS_TABLE.md`.
 - per-trait RiceGeneFormer final table.

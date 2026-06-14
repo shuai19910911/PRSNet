@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 19:43:32 CST
+最后更新：2026-06-14 20:01:59 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -239,6 +239,8 @@ baseline + ablation：2–5 天
 - [2026-06-14 19:05:20 CST] Cron 再次复核 Phase 5 输入 smoke 作业 `8562921`：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 仍满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境已是 CUDA 版 PyTorch（`torch=2.6.0+cu124`、CUDA build `12.4`；登录节点 `cuda_available=False` 属正常无 GPU），最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`logit_shape=2x35`、loss finite、grad_norm positive）。按独立代码复审意见补强 smoke 脚本：新增 smoke-only 上限（batch≤16、genes≤1024、SNP/gene≤128、hidden≤256）、JSON `allow_nan=False`、SLURM wrapper 中 Python/env-lib 存在性检查；随后 `py_compile`、`sh -n`、bounded 参数失败测试、`json.tool`、静态安全扫描、`git diff --check` 与独立复审均通过。当前 SLURM 仍不暴露 GPU 分区（`sbatch --test-only -p gpu10` 返回 invalid partition），`ssh gpu10` 检查 45 秒超时，因此本 tick 未新启动 GPU smoke；仅同步 docs 轻量进展，不上传数据/日志/脚本/权重。
 - [2026-06-14 19:35:53 CST] 继续写作阶段推进：新增 `docs/DATA_SOURCES_AND_CITATIONS.md`，完成 3K Rice Genome/SNP-Seek、Ensembl Plants IRGSP-1.0 annotation 与 STRING rice graph 的轻量 citation-control 审核，明确 raw 3K/SNP-Seek 来源已可支持 draft Methods wording，但 exact release/license/STRING URL 仍需投稿前格式化确认。新增 `docs/FIGURE_LEGENDS.md`，为当前 `docs/figures/` 下 4 个主图草稿写出完整 legend 与 source-data 对应关系。同步扩写 `docs/MANUSCRIPT_DRAFT.md` 的 Results 部分，将原 bullet scaffold 改为 6 个 claim-first prose subsections，并更新 immediate checklist；仍不上传原始数据、日志、脚本或权重。
 - [2026-06-14 19:43:01 CST] 按用户要求继续不停窗自主推进：扩写 `docs/MANUSCRIPT_DRAFT.md` 的 Methods 部分，将 Dataset processing、train-fold GWAS priors、SNP-to-gene mapping/graph construction、RiceGeneFormer-OMTL architecture、Training/model selection、Baselines、Distillation 全部从 bullet scaffold 改为可编辑英文正文；新增 `docs/MAIN_RESULTS_TABLE.md`，整理最终 RiceGeneFormer、LightGBM、XGBoost、SNP-MLP top-SNP baseline 的主结果表、指标定义和谨慎措辞边界。当前写作包已从 scaffold 进入 Results+Methods prose draft 阶段；后续优先补 Introduction prose 与 final submission gaps（baseline test role 对齐、per-trait baseline、exact license/release）。
+- [2026-06-14 19:44:55 CST] 继续补齐 manuscript prose：将 `docs/MANUSCRIPT_DRAFT.md` 的 Introduction 从 paragraph jobs 改为 5 段可编辑英文正文，采用 field scale → bottleneck → modeling gap → present study → bounded contribution 的结构；将 Discussion 从 bullet scaffold 扩写为 main message、biological/modeling interpretation、limitations、future work 四段式正文，重点强调当前贡献边界：RiceGeneFormer 是 leakage-aware ordinal benchmark + gene-aware model family，不宣称超过所有 top-SNP baselines。更新 immediate checklist，当前 Introduction/Results/Methods/Discussion 均已有 prose draft。
+- [2026-06-14 20:01:59 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 已无活动记录（`Invalid job id specified`），`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练作业；同时复核近期 deterministic test/evaluation 作业 `8563024`、`8563025` 均为 `COMPLETED|0:0`，继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、模型权重不上传。
 
 ## 8. 下一步执行优先级
 
