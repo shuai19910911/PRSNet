@@ -6,11 +6,11 @@ Status: writing can start from this scaffold. Claims are bounded to the evidence
 
 ## Abstract — structured draft placeholder
 
-Plant genotype-to-phenotype prediction increasingly requires models that account for gene structure, trait imbalance and the ordinal nature of many crop descriptor phenotypes. However, deep learning pipelines are difficult to compare fairly against strong marker-based baselines because genome-wide association signals, SNP-to-gene mappings and validation procedures can introduce hidden leakage or unstable model-selection effects. Here we developed RiceGeneFormer-OMTL, a gene-aware ordinal multi-task learning framework for 3K Rice Genome phenotype prediction. The model combines train-fold GWAS priors, SNP-to-gene aggregation, graph-aware gene tokens, trait-query decoding, gated top-SNP fusion and ordinal multi-task losses, and is evaluated with deterministic full-role validation and test procedures. On ten core ordinal rice descriptor traits, the final RiceGeneFormer family reached deterministic test macro-F1 values of 0.3229±0.0062 without distillation and 0.3292±0.0057 with weak expected-score distillation. These results approached a LightGBM top-SNP baseline (macro-F1 0.3354) but remained below balanced top-SNP SNP-MLP baselines (macro-F1 approximately 0.350–0.354). Ablations showed that gated top-SNP fusion and mild class balancing were more important than graph identity, SNP-to-gene mapping choice, post-hoc threshold calibration or simple expected-score distillation. These results provide a leakage-aware plant genotype-to-phenotype benchmark and clarify both the promise and current limits of gene-aware neural models under modest crop phenotype sample sizes.
+Plant genotype-to-phenotype prediction increasingly requires models that account for gene structure, trait imbalance and the ordinal nature of many crop descriptor phenotypes. However, deep learning pipelines are difficult to compare fairly against strong marker-based baselines because genome-wide association signals, SNP-to-gene mappings and validation procedures can introduce hidden leakage or unstable model-selection effects. Here we developed RiceGeneFormer-OMTL, a gene-aware ordinal multi-task learning framework for 3K Rice Genome phenotype prediction. The model combines train-fold GWAS priors, SNP-to-gene aggregation, graph-aware gene tokens, trait-query decoding, gated top-SNP fusion and ordinal multi-task losses, and is evaluated with deterministic full-role validation and test procedures. On ten core ordinal rice descriptor traits, the final RiceGeneFormer family reached deterministic test macro-F1 values of 0.3229±0.0062 without distillation and 0.3292±0.0057 with weak expected-score distillation. These results approached a LightGBM top-SNP baseline (test macro-F1 0.3380) but remained below balanced top-SNP SNP-MLP baselines (test macro-F1 0.3644–0.3781). Ablations showed that gated top-SNP fusion and mild class balancing were more important than graph identity, SNP-to-gene mapping choice, post-hoc threshold calibration or simple expected-score distillation. These results provide a leakage-aware plant genotype-to-phenotype benchmark and clarify both the promise and current limits of gene-aware neural models under modest crop phenotype sample sizes.
 
 Notes before final abstract:
-- Replace “approximately 0.350–0.354” with exact selected baseline table wording.
-- Add raw data citation/accession once verified.
+- Shorten to target-journal word limit after journal choice.
+- Convert verified data/annotation/STRING sources to final journal reference style.
 - Decide target journal word limit before shortening.
 
 ## Introduction — paragraph jobs
@@ -89,9 +89,9 @@ Top-SNP features were selected by ranking train-fold p-values within each trait.
 
 ### SNP-to-gene mapping and graph construction
 
-Rice gene coordinates were taken from Ensembl Plants annotation for the IRGSP-1.0 assembly. The main SNP-to-gene map assigned SNPs to genes using gene bodies plus a ±5 kb window. To test mapping sensitivity, we also generated body-only, ±2 kb, ±10 kb and nearest-gene maps. Each mapping artifact recorded the SNP-to-gene edge table, gene-to-SNP index and gene metadata, and was checked for SNP-index bounds and consistency with the genotype matrix.
+Rice gene coordinates were taken from Ensembl Plants release 61 annotation for the IRGSP-1.0 assembly (`Oryza_sativa.IRGSP-1.0.61.gff3.gz`). The main SNP-to-gene map assigned SNPs to genes using gene bodies plus a ±5 kb window. To test mapping sensitivity, we also generated body-only, ±2 kb, ±10 kb and nearest-gene maps. Each mapping artifact recorded the SNP-to-gene edge table, gene-to-SNP index and gene metadata, and was checked for SNP-index bounds and consistency with the genotype matrix.
 
-Gene graphs were built on the mapped gene node set. The baseline chromosome-neighbor graph linked nearby genes along chromosomes, and a degree-matched random graph served as a negative control. We also built a STRING v12.0 rice graph for Oryza sativa Japonica Group by mapping STRING protein associations to project gene IDs, applying a minimum combined score of 700 and pruning to the top 20 edges per gene. A chromosome+STRING fusion graph was generated by taking the edge union of the chromosome-neighbor and STRING graphs. For bounded graph pilots with 2,048 genes, an additional prefix-random control was used to match local edge density.
+Gene graphs were built on the mapped gene node set. The baseline chromosome-neighbor graph linked nearby genes along chromosomes, and a degree-matched random graph served as a negative control. We also built a STRING v12.0 rice graph for Oryza sativa Japonica Group (taxonomy ID 39947) by mapping STRING protein associations to project gene IDs, applying a minimum combined score of 700 and pruning to the top 20 edges per gene. A chromosome+STRING fusion graph was generated by taking the edge union of the chromosome-neighbor and STRING graphs. For bounded graph pilots with 2,048 genes, an additional prefix-random control was used to match local edge density.
 
 ### RiceGeneFormer-OMTL architecture
 
@@ -153,7 +153,7 @@ Ready now:
 - class-distribution table.
 
 Still required before submission:
-- exact citation formatting, license wording and local-release provenance for data/annotation/STRING resources; see `docs/DATA_SOURCES_AND_CITATIONS.md`.
+- final journal reference formatting and repository/DOI strategy; data-source/license details are now controlled in `docs/DATA_SOURCES_AND_CITATIONS.md`.
 - per-trait baseline metrics are now summarized for the main test-role methods; remaining supplement work is figure/table formatting rather than metric generation.
 - final figure polish and legend shortening; current draft legends are in `docs/FIGURE_LEGENDS.md`.
 - code/data repository and DOI strategy.

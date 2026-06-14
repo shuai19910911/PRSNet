@@ -1,6 +1,6 @@
 # RiceGeneFormer manuscript starter package
 
-Last updated: 2026-06-14 16:51:59 CST
+Last updated: 2026-06-14 21:16:03 CST
 
 ## 1. Detected writing axes
 
@@ -66,15 +66,15 @@ Main deterministic test comparison:
 | RiceGeneFormer full-step, no distillation | test | 0.3229 ± 0.0062 | 0.5895 ± 0.0029 | 0.5978 ± 0.0039 | 0.2556 ± 0.0053 | gated top-SNP fusion, alpha0.25, macro-F1 selection |
 | RiceGeneFormer + expected-score distillation w=0.10 | test | 0.3292 ± 0.0057 | 0.5894 ± 0.0049 | 0.5948 ± 0.0067 | 0.2701 ± 0.0057 | best distillation variant by test macro-F1 |
 | RiceGeneFormer + expected-score distillation w=0.20 | test | 0.3251 ± 0.0054 | 0.5906 ± 0.0033 | 0.5904 ± 0.0037 | 0.2757 ± 0.0089 | stronger weight, not better than w=0.10 |
-| LightGBM top512 | val | 0.3354 | 0.6271 | 0.5547 | n/a | single baseline run |
-| XGBoost top512 | val | 0.3115 | 0.6274 | 0.5662 | n/a | single baseline run |
-| SNP-MLP top512, alpha0.40 | val | 0.3502 ± 0.0117 | 0.6141 ± 0.0097 | 0.5697 ± 0.0108 | 0.3162 ± 0.0038 | strongest balanced accuracy/macro-F1 tradeoff |
-| SNP-MLP top512, alpha0.60 | val | 0.3544 ± 0.0112 | 0.5961 ± 0.0086 | 0.5976 ± 0.0087 | 0.3103 ± 0.0108 | highest macro-F1 baseline |
+| LightGBM top512 | test | 0.3380 | 0.6263 | 0.5630 | n/a | single baseline run |
+| XGBoost top512 | test | 0.3161 | 0.6332 | 0.5512 | n/a | single baseline run |
+| SNP-MLP top512, alpha0.40 | test | 0.3644 ± 0.0106 | 0.6317 ± 0.0023 | 0.5639 ± 0.0117 | n/a | strongest balanced accuracy/macro-F1 tradeoff |
+| SNP-MLP top512, alpha0.60 | test | 0.3781 ± 0.0029 | 0.6148 ± 0.0091 | 0.5899 ± 0.0176 | n/a | highest macro-F1 baseline |
 
 Important wording boundary:
 
 - Do not write that RiceGeneFormer outperforms all baselines.
-- Correct claim: RiceGeneFormer approaches LightGBM macro-F1 and provides a gene-aware multi-task framework, but strong top-SNP SNP-MLP remains the best predictive baseline under the present random split.
+- Correct claim: RiceGeneFormer approaches LightGBM macro-F1 and provides a gene-aware multi-task framework, but strong top-SNP SNP-MLP remains the best predictive baseline under the present random-split test evaluation.
 
 Writing status: ready for a balanced Results subsection.
 
@@ -127,7 +127,7 @@ Preferred current title: "Gene-aware ordinal multi-task learning benchmarks geno
 1. Context: plant genotype-to-phenotype prediction increasingly needs models that respect gene structure, trait imbalance, and ordinal descriptor phenotypes.
 2. Gap: many pipelines either use top markers directly or treat descriptor-code phenotypes as ordinary classification/regression targets, while leakage-safe gene-aware deep models remain difficult to compare fairly.
 3. Approach: introduce RiceGeneFormer-OMTL, using train-fold GWAS priors, SNP-to-gene aggregation, graph-aware gene tokens, gated top-SNP fusion, and ordinal multi-task losses.
-4. Evidence: on 3K Rice, deterministic test macro-F1 reached 0.3229 without distillation and 0.3292 with weak expected-score distillation; LightGBM reached 0.3354 val macro-F1 and top-SNP SNP-MLP reached about 0.350–0.354 val macro-F1.
+4. Evidence: on 3K Rice, deterministic test macro-F1 reached 0.3229 without distillation and 0.3292 with weak expected-score distillation; LightGBM reached 0.3380 test macro-F1 and top-SNP SNP-MLP reached 0.3644–0.3781 test macro-F1.
 5. Interpretation: top-SNP fusion and mild class balancing mattered most; graph identity, mapping variants, threshold calibration, and simple expected-score distillation gave limited or unstable gains.
 6. Boundary/impact: the study provides a reproducible plant G2P benchmark and a calibrated assessment of where gene-aware neural models currently help and where top-SNP baselines still dominate.
 

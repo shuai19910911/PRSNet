@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 21:05:35 CST
+最后更新：2026-06-14 21:25:35 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -247,6 +247,9 @@ baseline + ablation：2–5 天
 - [2026-06-14 20:19:47 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前写作包已包含 Introduction/Results/Methods/Discussion prose、主结果表、per-trait 表、class distribution、citation-control 与 figure legends；本 tick 未新增训练或数据产物，仅同步 docs 轻量进展。
 - [2026-06-14 20:47:13 CST] Cron 例行复核并核查 supplement 结果：`squeue -j 8562921` 仍无活动记录，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json`/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。复核 `PRSNet` 环境为 CUDA 版 PyTorch `2.6.0+cu124`（登录节点无 GPU 属正常）；补充确认 fusion graph seed43/44 训练 manifest 与 checkpoint 均非空，指标与此前 `chr_string_fusion` 记录一致。当前最新新增成果是 CPU 作业 `8566261` 完成 supplement-grade per-trait comparison，已生成 `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.md/tsv`；继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、权重不上传。
 - [2026-06-14 21:05:35 CST] Cron 本轮复核：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 继续验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 仍为 CUDA 版 `2.6.0+cu124`（CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常）。本轮未新增训练/数据产物，仅更新并准备同步 docs 轻量进展；数据、日志、脚本、权重继续不上传 GitHub。
+- [2026-06-14 21:16:03 CST] 继续写作/投稿前控制项推进：核对并更新 `docs/DATA_SOURCES_AND_CITATIONS.md`，将 3K Rice/SNP-Seek 数据页、3KRG permissive license、Ensembl Plants release 61 IRGSP-1.0 GFF3、STRING v12.0 Oryza sativa Japonica Group compact links 与 STRING 2023 DOI 纳入 citation-control。通过 HTTP HEAD 验证 STRING aliases/links、Ensembl release-61 GFF3 与 3KRG license URL 可访问；同步修正 `docs/MANUSCRIPT_DRAFT.md` 与 `docs/MANUSCRIPT_STARTER.md` 中旧的 val-role baseline 数字，统一为 test-role LightGBM/XGBoost/SNP-MLP 结果。剩余投稿前缺口收敛为最终期刊引用格式与代码/数据仓库 DOI 策略。
+
+- [2026-06-14 21:25:35 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回队列中无活动作业，`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、权重和二进制产物不上传。
 
 ## 8. 下一步执行优先级
 
