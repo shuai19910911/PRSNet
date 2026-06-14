@@ -1,6 +1,6 @@
 # RiceGeneFormer gene-interpretation audit
 
-Last updated: 2026-06-14
+Last updated: 2026-06-14 22:26:58 CST
 
 ## Purpose
 
@@ -103,7 +103,24 @@ Validation:
 - graph manifest passed `json.tool`.
 - RiceGeneFormer CPU smoke with this graph passed with `status=ok`, `genes_used=64`, `graph_edges_used=610`.
 
-A seed42 GPU pilot is now running on `gpu10` physical GPU2 with the same main architecture but the GWAS-top2048 gene graph. This tests whether genome-wide selected genes improve either prediction or interpretability.
+The first seed42 GPU pilot has completed on `gpu10` physical GPU2 with the same main architecture but the GWAS-top2048 gene graph.
+
+Result:
+
+- output directory: `data/3krice/processed/rice_geneformer_gwas_top2048_seed42_e20_s100_gpu2/`
+- deterministic test macro-F1: `0.2990`
+- test accuracy: `0.5836`
+- test MAE: `0.5878`
+- test Spearman: `0.2417`
+
+This is worse than the current w=0.10 distillation random-split RiceGeneFormer test macro-F1 (`0.3292±0.0057`) and worse than the no-distillation full-step family (`0.3229±0.0062`). Therefore, replacing the prefix genes with a simple train-fold GWAS-top gene panel does not improve prediction in this first seed42 pilot.
+
+Gene attention was also exported for this seed42 GWAS-top model:
+
+- `data/3krice/processed/gene_attention_gwas_top2048_seed42_test/gene_attention_top.tsv`
+- `data/3krice/processed/gene_attention_gwas_top2048_seed42_test/gene_attention_manifest.json`
+
+The preliminary known-gene panel did not appear in the top 300 attention genes for any trait, and the audited canonical genes were not selected into the GWAS-top2048 panel. This weakens the immediate biological-discovery route.
 
 ## Journal implication
 
@@ -116,9 +133,9 @@ Current state after this audit:
 
 ## Next decision rule
 
-After the GWAS-top2048 seed42 pilot finishes:
+Decision after the GWAS-top2048 seed42 pilot:
 
-1. If performance is similar or better than prefix-gene RiceGeneFormer, run seed43/44 and export gene scores again.
-2. If known genes become available in the selected panel and appear in trait-relevant top ranks, continue toward BIB biological-support supplement.
-3. If performance drops or attention remains unstable, keep the result as a diagnostic limitation and avoid biological discovery claims.
-4. In no case should the current prefix-gene attention results be used as a Nature Communications-level biological mechanism claim.
+1. Do not spend GPU time on seed43/44 for this exact GWAS-top2048 graph unless a stronger biological candidate panel or QTL interval resource is added.
+2. Keep the prefix-gene and GWAS-top gene-attention results as diagnostic limitations, not as positive biological evidence.
+3. For BIB, use this as a reproducibility/benchmarking caution: bounded gene selection can materially constrain interpretability.
+4. For NC, current gene-attention evidence is insufficient. A credible NC route would require a proper QTL database overlap or an externally validated candidate-gene analysis, not just attention ranks.
