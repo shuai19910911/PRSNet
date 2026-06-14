@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 06:21:47 CST
+最后更新：2026-06-15 06:40:21 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -282,6 +282,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 05:27:21 CST] Cron 例行复核 Phase 5 输入 smoke 与最小模型 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json`/report 全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`、10 个 GWAS core trait p-value shape 均为 365,710。`PRSNet` 环境复核为 PyTorch `2.6.0+cu124`、CUDA build `12.4`；最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`logit_shape=2x35`、loss finite、grad_norm `23.619`）。SLURM 当前仍不暴露 GPU 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`，GRES `(null)`；`sbatch --test-only -p gpu10` 返回 invalid partition），`ssh gpu10` 检查 45 秒超时，因此本轮未提交 GPU smoke/训练。继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 06:21:47 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化复核 `model_input_smoke_manifest.json` 和 `model_input_smoke_report.tsv` 全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，10 个 core GWAS p-value shape 均为 365,710。`PRSNet` 环境仍为 PyTorch `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 正常；SLURM 仍不暴露 GPU 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`、GRES `(null)`，`sbatch --test-only -p gpu10` 返回 invalid partition）。本轮只同步 docs 轻量进展，不新增训练，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 06:40:21 CST] Cron 例行复核 Phase 5 输入 smoke 与 release source-data 包：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json`/report 脚本化验证继续通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。同时复核 `docs/source_data/SOURCE_DATA_MANIFEST.json`：7 个轻量 source-data 文件及其本地 source 路径均存在，记录字节数一致；overclaim 扫描命中均为“不应宣称 state-of-the-art / breakthrough / biological discovery”等负向或边界语境，未发现需要立刻改写的正向过度主张。本轮无新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
