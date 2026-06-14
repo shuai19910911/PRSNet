@@ -1,0 +1,33 @@
+# Draft figure legends for RiceGeneFormer manuscript
+
+Status: draft legends for current editable SVG/PDF/TIFF figure set generated under `docs/figures/`. These legends are written for manuscript drafting and should be shortened after the final target journal is chosen.
+
+## Figure 1. Leakage-aware construction of an ordinal 3K rice genotype-to-phenotype benchmark
+
+(a) Workflow used to construct the RiceGeneFormer benchmark from 3K Rice Genome resources. Genotype data were processed into a 3,000-accession by 365,710-SNP matrix, aligned to descriptor-code phenotypes, split into train, validation and test roles, and then used to compute train-fold GWAS priors before any model fitting. The train/validation/test split contained 1,586/340/340 supervised accessions; accessions without selected phenotype labels were retained only where appropriate for matrix alignment and artifact checking. (b) Class imbalance across the ten core ordinal descriptor traits in the training role, summarized as the largest-class fraction for each trait. Several traits were dominated by a single class, motivating macro-F1 reporting and class-balanced training experiments. (c) Main validated benchmark artifacts used by the modeling pipeline, including SNP count, core trait count, train-fold GWAS p-value sets, mapped gene count and graph edge count.
+
+Source data: `docs/figure_source_data/fig1a_workflow_artifacts.csv`, `fig1b_trait_imbalance.csv`, and `fig1c_artifact_counts.csv`.
+
+## Figure 2. RiceGeneFormer-OMTL model design and component priorities
+
+(a) RiceGeneFormer-OMTL architecture. SNP dosages are combined with train-fold GWAS priors, aggregated into gene-level tokens through SNP-to-gene bags, processed with a lightweight graph encoder, decoded by trait-specific queries and evaluated with ordinal phenotype heads. A separate train-fold top-SNP branch is fused into trait tokens through a gated fusion module. (b) Qualitative summary of design choices that were prioritized during pilot development. Direct top-SNP signal, gated fusion and mild class balancing gave the clearest practical improvements, whereas simple expected-score distillation had only weak incremental value. (c) Pilot comparison of graph choices. Chromosome-neighbor, edge-matched random, STRING and chromosome+STRING fusion graphs produced similar bounded-pilot macro-F1 values, indicating no stable graph-identity advantage for the current lightweight mean-neighbor encoder. (d) Final RiceGeneFormer family frozen for reporting: gated top-SNP fusion, alpha0.25 class-balanced ordinal training, validation macro-F1 checkpoint selection and optional weak expected-score distillation.
+
+Source data: `docs/figure_source_data/fig2b_design_choice_utility.csv` and `fig2c_graph_pilot_macro_f1.csv`.
+
+Review note: panel b is intentionally qualitative and should either be moved to schematic-only form or backed by a numerical ablation table before final submission.
+
+## Figure 3. Final predictive performance and trait-level failure modes
+
+(a-c) Deterministic test-role comparison among final RiceGeneFormer variants and top-SNP baselines. RiceGeneFormer without distillation reached test macro-F1 0.3229±0.0062, while weak expected-score distillation with weight 0.10 reached 0.3292±0.0057. These results approached the LightGBM top-SNP baseline (macro-F1 0.3354) but remained below balanced SNP-MLP baselines, which reached approximately 0.350-0.354 macro-F1 across alpha0.40-alpha0.60 settings. Accuracy and MAE showed the expected trade-off: tree baselines retained higher accuracy, whereas stronger class balancing improved macro-F1 at some cost to accuracy and MAE. (d) Per-trait deterministic test performance for the best RiceGeneFormer variant (expected-score distillation weight 0.10). Binary or low-cardinality traits such as CUDI_CODE_REPRO and PTH had higher macro-F1, whereas strongly imbalanced multi-class traits such as CUST_REPRO and SPKF remained difficult. (e) Relationship between training-set class imbalance and final RiceGeneFormer macro-F1, illustrating that several low-macro-F1 traits had large dominant-class fractions.
+
+Source data: `docs/figure_source_data/fig3abc_main_performance.csv`, `fig3de_per_trait_performance.csv`, `docs/FINAL_PER_TRAIT_METRICS_RGF_W010_TEST.tsv`, and `docs/CORE_TRAIT_CLASS_DISTRIBUTION.tsv`.
+
+Definitions: macro-F1 is the unweighted mean of per-class F1 scores; MAE is mean absolute error in ordinal class units; alpha denotes the interpolation strength between unweighted and inverse-frequency class-balanced loss.
+
+## Figure 4. Ablation boundaries and negative controls
+
+(a) Expected-score distillation from the SNP-MLP teacher produced only weak and non-monotonic gains. Distillation weight 0.10 gave the highest RiceGeneFormer test macro-F1 among the tested weights, whereas increasing the weight to 0.20 did not improve the final mean. (b) Graph-identity pilots showed similar macro-F1 among chromosome-neighbor, edge-matched random, STRING and chromosome+STRING fusion graphs. This result supports the conservative conclusion that the current lightweight graph encoder did not demonstrate a graph-specific performance advantage. (c) SNP-to-gene mapping ablations showed similar bounded-pilot macro-F1 across body-only, ±2 kb, ±5 kb, ±10 kb and nearest-gene mappings, suggesting that mapping-window choice was not the main bottleneck under the current configuration. (d) Current manuscript figure plan and remaining supplementary workload, including per-trait baseline metrics, source-data CSVs, architecture polish, data-accession audit and optional cross-region or cross-subpopulation evaluation.
+
+Source data: `docs/figure_source_data/fig4a_distillation_macro_f1.csv`, `fig4b_graph_ablation.csv`, and `fig4c_mapping_ablation.csv`.
+
+Interpretation boundary: the graph and mapping results are bounded pilots. They do not show that biological graphs or SNP-to-gene mapping are generally unimportant; they show that these particular implementations did not yield robust predictive gains in the present 3K Rice random-split setting.
