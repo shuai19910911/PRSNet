@@ -1,6 +1,6 @@
 # Data sources and citation audit for RiceGeneFormer
 
-Status: lightweight citation-control note updated on 2026-06-14 21:16:03 CST. This file records source URLs and citation anchors for manuscript drafting. It does not include raw data, logs, model weights or credentials.
+Status: lightweight citation-control note updated on 2026-06-14 22:55 CST. This file records source URLs and citation anchors for manuscript drafting. It does not include raw data, logs, model weights or credentials.
 
 ## 1. 3K Rice Genome genotype and phenotype sources
 
@@ -103,9 +103,10 @@ Boundary:
 
 These items remain unresolved or should be finalized before submission:
 
-1. Repository/DOI strategy for project code and lightweight processed summaries.
+1. Final DOI or accession for the code/source-data release. The planning document is now `docs/DATA_AND_CODE_AVAILABILITY_PLAN.md`, but no public release DOI has been minted yet.
 2. Final journal-specific formatting of the data, annotation and STRING references.
+3. Source-data README/data dictionary for any lightweight TSV/CSV/JSON summaries copied out of local `data/3krice/processed/` into a public release directory.
 
 ## 5. How this affects the manuscript checklist
 
-The raw 3K Rice Genome/SNP-Seek source identity, data-usage license wording, Ensembl Plants release-61 annotation identity and STRING v12 compact-link download identity are now sufficiently verified for draft Methods wording. The remaining pre-submission gap is not the existence of the data sources, but final journal-specific reference formatting and repository/DOI planning.
+The raw 3K Rice Genome/SNP-Seek source identity, data-usage license wording, Ensembl Plants release-61 annotation identity and STRING v12 compact-link download identity are now sufficiently verified for draft Methods wording. The remaining pre-submission gap is not the existence of the data sources, but final journal-specific reference formatting, DOI-backed code/source-data release, and source-data dictionary preparation.

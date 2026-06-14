@@ -1,17 +1,20 @@
 # Draft manuscript scaffold: RiceGeneFormer
 
-Working title: Gene-aware ordinal multi-task learning benchmarks genotype-to-phenotype prediction in 3K rice genomes
+Working title: A leakage-aware ordinal benchmark for gene-aware genotype-to-phenotype prediction in 3K rice genomes
 
 Status: writing can start from this scaffold. Claims are bounded to the evidence available as of 2026-06-14 22:32 CST.
 
-## Abstract — structured draft placeholder
+## Abstract — BIB-ready draft
 
-Plant genotype-to-phenotype prediction increasingly requires models that account for gene structure, trait imbalance and the ordinal nature of many crop descriptor phenotypes. However, deep learning pipelines are difficult to compare fairly against strong marker-based baselines because genome-wide association signals, SNP-to-gene mappings and validation procedures can introduce hidden leakage or unstable model-selection effects. Here we developed RiceGeneFormer-OMTL, a gene-aware ordinal multi-task learning framework for 3K Rice Genome phenotype prediction. The model combines train-fold GWAS priors, SNP-to-gene aggregation, graph-aware gene tokens, trait-query decoding, gated top-SNP fusion and ordinal multi-task losses, and is evaluated with deterministic full-role validation and test procedures. On ten core ordinal rice descriptor traits, the final RiceGeneFormer family reached deterministic test macro-F1 values of 0.3229±0.0062 without distillation and 0.3292±0.0057 with weak expected-score distillation. These results approached a LightGBM top-SNP baseline (test macro-F1 0.3380) but remained below balanced top-SNP SNP-MLP baselines (test macro-F1 0.3644–0.3781). Cross-region evaluation and gene-attention audits did not support a robustness or biological-discovery claim for the current model. Instead, they exposed important diagnostic boundaries, including the sensitivity of interpretation to bounded gene selection. These results provide a leakage-aware plant genotype-to-phenotype benchmark and clarify both the promise and current limits of gene-aware neural models under modest crop phenotype sample sizes.
+Plant genotype-to-phenotype prediction increasingly relies on dense genomic panels, but many crop phenotypes are ordinal descriptor codes with strong class imbalance. This creates two linked challenges: models must respect ordered trait labels, and evaluations must prevent genome-wide association signals or model-selection procedures from leaking validation or test information. We developed RiceGeneFormer-OMTL, a gene-aware ordinal multi-task framework for 3K Rice Genome phenotype prediction, and used it to build a leakage-aware benchmark for ten core ordinal rice traits. The framework combines train-fold GWAS priors, SNP-to-gene aggregation, graph-aware gene tokens, trait-query decoding, gated top-SNP fusion and cumulative-link ordinal heads. All final neural metrics were recomputed with deterministic full-role validation or test evaluation.
+
+RiceGeneFormer reached deterministic test macro-F1 values of 0.3229±0.0062 without distillation and 0.3292±0.0057 with weak expected-score distillation. These results approached LightGBM using train-fold top SNPs (macro-F1 0.3380), but remained below balanced SNP-MLP baselines (macro-F1 0.3644±0.0106 to 0.3781±0.0029). Gated top-SNP fusion and mild class balancing were the most useful model choices, whereas graph identity, SNP-to-gene window choice, threshold calibration and expected-score distillation produced limited or unstable gains. Cross-region benchmarks across Southeast Asia, South Asia and East Asia did not support a distribution-shift robustness advantage. Gene-attention audits further showed that bounded gene selection can constrain biological interpretation, and a train-fold GWAS-top2048 gene panel did not improve performance or known-gene recovery.
+
+RiceGeneFormer therefore provides a reproducible diagnostic framework rather than a claim of neural-model superiority. The benchmark clarifies when gene-aware crop models approach marker-level baselines, where they fail, and which evidence is required before making robustness or biological-discovery claims.
 
 Notes before final abstract:
-- Shorten to target-journal word limit after journal choice.
 - Convert verified data/annotation/STRING sources to final journal reference style.
-- Decide target journal word limit before shortening.
+- Shorten further only after the final target-journal word limit is known.
 
 ## Introduction — paragraph jobs
 
@@ -176,3 +179,9 @@ Still required before submission:
 - final figure polish and legend shortening; current draft legends are in `docs/FIGURE_LEGENDS.md`.
 - code/data repository and DOI strategy.
 - target journal decision.
+
+## Data and Code Availability — draft text
+
+Raw genotype, phenotype and accession metadata are available from the public 3K Rice Genome / SNP-Seek resources. The primary genotype input was the 3K core SNP PLINK resource, and phenotype labels were obtained from the 3KRG morpho-agronomic phenotype spreadsheet. Rice gene coordinates were obtained from Ensembl Plants release 61 for the IRGSP-1.0 assembly, and STRING graph inputs were obtained from STRING v12.0 for Oryza sativa Japonica Group. Source URLs and citation anchors are tracked in `docs/DATA_SOURCES_AND_CITATIONS.md`.
+
+The code and lightweight source data supporting the manuscript figures, final performance tables, cross-region benchmarks and gene-interpretation audits will be released in a versioned public repository before submission. The current working repository is `git@github.com:shuai19910911/PRSNet.git`; a permanent DOI has not yet been assigned. Large derived matrices, intermediate GWAS p-value arrays, checkpoints and job logs are not included in the public manuscript repository by default because they can be regenerated from public inputs and released code, and because raw or derivative data redistribution requires final licence review. The current repository/DOI plan is recorded in `docs/DATA_AND_CODE_AVAILABILITY_PLAN.md`.
