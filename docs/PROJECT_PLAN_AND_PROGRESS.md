@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 06:59:00 CST
+最后更新：2026-06-15 07:43:03 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -286,6 +286,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 06:40:21 CST] Cron 例行复核 Phase 5 输入 smoke 与 release source-data 包：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json`/report 脚本化验证继续通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。同时复核 `docs/source_data/SOURCE_DATA_MANIFEST.json`：7 个轻量 source-data 文件及其本地 source 路径均存在，记录字节数一致；overclaim 扫描命中均为“不应宣称 state-of-the-art / breakthrough / biological discovery”等负向或边界语境，未发现需要立刻改写的正向过度主张。本轮无新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 06:59:00 CST] Cron 例行复核 Phase 5 输入 smoke 与 GPU smoke 提交条件：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点无 GPU所以 `cuda_available=False` 正常）；最小 RiceGeneFormer-OMTL smoke/training 代码复核通过：`py_compile`、SLURM wrapper `sh -n`、SBATCH 绝对日志路径/父目录检查、静态安全扫描和独立代码复审均无 blocking issue。但当前 SLURM 仍不暴露 `gpu10` 分区；本轮未提交新的 GPU smoke/训练，只同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 07:43:03 CST] Cron 复核并推进 Phase 5 后续准备：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json`/report 继续全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`，登录节点无 GPU 所以 `cuda_available=False` 正常；最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`status=ok`、`logit_shape=2x35`、loss finite、grad_norm `23.806`）。按独立复审意见补强 `rice_geneformer_omtl_train.py` bounded smoke-training 参数上限（batch≤64、hidden≤256、epochs≤50、steps/epoch≤200）并给 GPU smoke wrapper 增加 `#SBATCH --time=00:20:00`；随后 `py_compile`、`sh -n`、参数上限失败测试、静态安全扫描和独立复审均通过。当前 SLURM 仍不暴露 `gpu10` 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`、GRES `(null)`；`sbatch --test-only -p gpu10` 返回 invalid partition），因此未提交 GPU smoke。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
