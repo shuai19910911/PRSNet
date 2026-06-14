@@ -167,17 +167,20 @@ Ready now:
 - Results prose draft.
 - Methods prose draft.
 - Discussion prose draft.
+- BIB-ready abstract and title package in `docs/BIB_SUBMISSION_PACKAGE.md`.
 - main performance numbers.
 - draft main results table in `docs/MAIN_RESULTS_TABLE.md`.
 - per-trait RiceGeneFormer final table.
 - supplementary per-trait method comparison in `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.md` and `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.tsv`.
 - class-distribution table.
+- short BIB-ready figure legends in `docs/FIGURE_LEGENDS_SHORT.md`.
+- reviewer-risk and claim-boundary audit in `docs/BIB_REVIEWER_RISK_AUDIT.md`.
 
 Still required before submission:
 - final journal reference formatting and repository/DOI strategy; data-source/license details are now controlled in `docs/DATA_SOURCES_AND_CITATIONS.md`.
 - per-trait baseline metrics are now summarized for the main test-role methods; remaining supplement work is figure/table formatting rather than metric generation.
-- final figure polish and legend shortening; current draft legends are in `docs/FIGURE_LEGENDS.md`.
-- code/data repository and DOI strategy.
+- final figure panel polish; long draft legends are in `docs/FIGURE_LEGENDS.md` and shortened legends are in `docs/FIGURE_LEGENDS_SHORT.md`.
+- final code/data repository DOI or release tag.
 - target journal decision.
 
 ## Data and Code Availability — draft text

@@ -1,0 +1,22 @@
+{
+  "hits_rank_le_200": 8,
+  "known_genes": 14,
+  "note": "Preliminary known-gene IDs need citation/ID verification before manuscript claims.",
+  "rows": 140,
+  "status": "ok",
+  "traits": [
+    "CUDI_CODE_REPRO",
+    "CULT_CODE_REPRO",
+    "CUNO_CODE_REPRO",
+    "LLT_CODE",
+    "PLT_CODE_POST",
+    "SDHT_CODE",
+    "PTH",
+    "SPKF",
+    "CUST_REPRO",
+    "PSH"
+  ],
+  "unique_symbols_hit_rank_le_200": [
+    "Gn1a"
+  ]
+}

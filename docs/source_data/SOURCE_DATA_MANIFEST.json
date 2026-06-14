@@ -1,0 +1,40 @@
+{
+  "files": [
+    {
+      "bytes": 2281,
+      "file": "region_shift_baseline_summary.tsv",
+      "source": "data/3krice/processed/region_shift_baseline_summary_region_manual_20260614_213808.tsv"
+    },
+    {
+      "bytes": 803,
+      "file": "region_shift_rice_geneformer_summary.tsv",
+      "source": "data/3krice/processed/region_shift_rice_geneformer_summary_region_rgf_manual_20260614_214252.tsv"
+    },
+    {
+      "bytes": 293754,
+      "file": "gene_attention_w010_top200_aggregate.tsv",
+      "source": "data/3krice/processed/gene_attention_w010_test_aggregate/gene_attention_top200_aggregate.tsv"
+    },
+    {
+      "bytes": 1073,
+      "file": "gene_attention_w010_aggregate_manifest.json",
+      "source": "data/3krice/processed/gene_attention_w010_test_aggregate/gene_attention_aggregate_manifest.json"
+    },
+    {
+      "bytes": 425,
+      "file": "known_gene_overlap_manifest.json",
+      "source": "data/3krice/processed/gene_attention_known_gene_overlap_w010_test/known_gene_overlap_manifest.json"
+    },
+    {
+      "bytes": 1902,
+      "file": "gwas_top2048_seed42_evaluation_manifest.json",
+      "source": "data/3krice/processed/rice_geneformer_gwas_top2048_seed42_e20_s100_gpu2/test_eval/evaluation_manifest.json"
+    },
+    {
+      "bytes": 456,
+      "file": "gwas_top2048_graph_manifest.json",
+      "source": "data/3krice/processed/gene_graph/baseline/gwas_top2048_random_seed42_chr_neighbor_k5/graph_manifest.json"
+    }
+  ],
+  "status": "ok"
+}

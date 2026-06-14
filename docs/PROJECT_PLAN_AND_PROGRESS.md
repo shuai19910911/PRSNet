@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 23:11:20 CST
+最后更新：2026-06-14 23:39:51 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -262,10 +262,11 @@ baseline + ablation：2–5 天
 - [2026-06-14 23:01:08 CST] 创建轻量 public source-data release 目录 `docs/source_data/`：已复制 region-shift baseline/RiceGeneFormer summaries、gene-attention aggregate top200、gene-attention manifest、known-gene overlap manifest、GWAS-top2048 graph/evaluation manifests，并生成 `docs/source_data/SOURCE_DATA_MANIFEST.json` 与 `docs/source_data/README.md` 数据字典。同步更新 `docs/DATA_AND_CODE_AVAILABILITY_PLAN.md`，将 `docs/source_data/` 标记为当前 packaged source-data directory。该目录仍不包含 raw genotype/phenotype、大矩阵、GWAS p-value arrays、checkpoint 或日志。
 - [2026-06-14 23:09:49 CST] 准备 BIB submission package 并压缩主摘要：新增 `docs/BIB_SUBMISSION_PACKAGE.md`，包含推荐题目、4 个备选题目、BIB-ready abstract、key points、keywords、one-sentence contribution、claim-evidence map 与 missing-before-submission list。同步更新 `docs/MANUSCRIPT_DRAFT.md` 的 working title 和 abstract，改为 270-word BIB-ready draft，明确 RiceGeneFormer 是 reproducible diagnostic framework，而不是 neural superiority、robustness 或 biological-discovery claim。
 - [2026-06-14 23:11:20 CST] 生成短版图注 `docs/FIGURE_LEGENDS_SHORT.md`：按 BIB 投稿插入文本压缩 Figure 1-4 与 Supplementary Figure 1 图注，保留关键指标和 Figure 4 的 diagnostic negative-control 边界说明；source data 路径已改用 `docs/source_data/` 中的可公开轻量文件。检查显示 Figure 1/2/3 图注约 108/114/111 words，Figure 4 因包含 region-shift 与 gene-attention 边界约 205 words。
+- [2026-06-14 23:39:51 CST] 继续执行 BIB reviewer-risk audit：新增 `docs/BIB_REVIEWER_RISK_AUDIT.md`，按 contribution、baseline gap、robustness、gene attention、graph advantage、leakage、metric choice、data/code DOI、citation/source formatting 和 source-data consistency 梳理 likely reviewer concerns、current evidence、manuscript action 与 status；同步更新 `docs/MANUSCRIPT_DRAFT.md` 的 writing checklist，标记 BIB package、short figure legends、reviewer-risk audit 已 ready。完成 overclaim regex scan，命中均为“不得宣称 state-of-the-art / breakthrough / biological validation”等负向或边界上下文，未发现需要立刻改写的过度主张。
 
 ## 8. 下一步执行优先级
 
 1. cross-region deterministic benchmark 与当前 gene-attention/known-gene 初审均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. `docs/MANUSCRIPT_DRAFT.md`、`docs/BIB_SUBMISSION_PACKAGE.md`、`docs/FIGURE_LEGENDS_SHORT.md`、`docs/MAIN_RESULTS_TABLE.md`、Data/Code Availability plan 与 `docs/source_data/` 已同步到 BIB benchmark/diagnostic 定位；下一步应进行全稿一致性审阅，并准备 DOI-backed GitHub/Zenodo release/tag。
+4. `docs/MANUSCRIPT_DRAFT.md`、`docs/BIB_SUBMISSION_PACKAGE.md`、`docs/BIB_REVIEWER_RISK_AUDIT.md`、`docs/FIGURE_LEGENDS_SHORT.md`、`docs/MAIN_RESULTS_TABLE.md`、Data/Code Availability plan 与 `docs/source_data/` 已同步到 BIB benchmark/diagnostic 定位；下一步应准备 DOI-backed GitHub/Zenodo release/tag，并在 DOI/reference 更新后重复 overclaim scan。

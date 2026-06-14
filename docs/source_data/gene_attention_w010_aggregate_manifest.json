@@ -1,0 +1,29 @@
+{
+  "genes": 2048,
+  "input_npz": [
+    "/home/user/zhangzhishuai/myhermes/PRSNet/data/3krice/processed/gene_attention_w010_seed42_test/gene_attention_scores.npz",
+    "/home/user/zhangzhishuai/myhermes/PRSNet/data/3krice/processed/gene_attention_w010_seed43_test/gene_attention_scores.npz",
+    "/home/user/zhangzhishuai/myhermes/PRSNet/data/3krice/processed/gene_attention_w010_seed44_test/gene_attention_scores.npz"
+  ],
+  "score_definition": "mean of per-seed mean trait-gene attention weights over test samples",
+  "score_npz": "/home/user/zhangzhishuai/myhermes/PRSNet/data/3krice/processed/gene_attention_w010_test_aggregate/gene_attention_aggregate_scores.npz",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "status": "ok",
+  "top_tsv": "/home/user/zhangzhishuai/myhermes/PRSNet/data/3krice/processed/gene_attention_w010_test_aggregate/gene_attention_top200_aggregate.tsv",
+  "traits": [
+    "CUDI_CODE_REPRO",
+    "CULT_CODE_REPRO",
+    "CUNO_CODE_REPRO",
+    "LLT_CODE",
+    "PLT_CODE_POST",
+    "SDHT_CODE",
+    "PTH",
+    "SPKF",
+    "CUST_REPRO",
+    "PSH"
+  ]
+}

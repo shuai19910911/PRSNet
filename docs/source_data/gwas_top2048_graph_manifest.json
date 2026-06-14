@@ -1,0 +1,14 @@
+{
+  "directed_edges": 20300,
+  "k_neighbors": 5,
+  "out_graph": "gwas_top2048_random_seed42_chr_neighbor_k5",
+  "out_graph_root": "baseline",
+  "score_definition": "max over traits of max -log10(train-fold GWAS pvalue) across SNPs mapped to gene",
+  "snp_gene_map": "window_5kb",
+  "source_graph": "baseline/chr_neighbor_k5",
+  "split": "random_seed42",
+  "status": "ok",
+  "top_genes": 2048,
+  "trait_group": "core_ordinal",
+  "undirected_edges": 10150
+}
