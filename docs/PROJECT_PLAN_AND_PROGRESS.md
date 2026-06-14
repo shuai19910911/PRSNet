@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-14 21:44:55 CST
+最后更新：2026-06-14 22:04:21 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -251,6 +251,7 @@ baseline + ablation：2–5 天
 
 - [2026-06-14 21:25:35 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回队列中无活动作业，`sacct` 仍确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；继续保持 GitHub 仅同步 docs 轻量进展，数据、日志、脚本、权重和二进制产物不上传。
 - [2026-06-14 21:44:55 CST] Cron 例行复核并完成投稿策略文档同步准备：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮确认 `gpu10` 可达，物理 GPU2 空闲约 1.0 GB/40 GB 已用，但当前任务进入写作/投稿策略阶段，未新启训练。新增/保留轻量 `docs/BIB_NC_SUBMISSION_STRATEGY.md`，明确当前稿件更适合按 BIB 风格定位为 leakage-aware ordinal G2P benchmark；Nature Communications 需补 cross-region robustness 或 gene/QTL biological interpretation 后再考虑。准备仅推送 docs 文本、SVG、CSV/TSV/JSON source-data，继续不上传数据、日志、脚本、权重、PDF/TIFF 二进制。
+- [2026-06-14 22:04:21 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 已无活动记录（`Invalid job id specified`），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境仍存在且 CUDA 版 PyTorch 已在前序 tick 验证可用；当前仓库已有最小 RiceGeneFormer-OMTL dataloader/model smoke 与 SLURM wrapper，并已在前序记录中完成 CPU/GPU smoke、静态检查和独立复审。本轮未新增训练/数据产物，也未上传数据、日志、脚本、权重或二进制文件；仅准备同步 docs 轻量进展。
 
 ## 8. 下一步执行优先级
 
