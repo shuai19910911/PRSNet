@@ -18,7 +18,7 @@ Review note: panel b is intentionally qualitative and should either be moved to 
 
 ## Figure 3. Final predictive performance and trait-level failure modes
 
-(a-c) Deterministic test-role comparison among final RiceGeneFormer variants and top-SNP baselines. RiceGeneFormer without distillation reached test macro-F1 0.3229±0.0062, while weak expected-score distillation with weight 0.10 reached 0.3292±0.0057. These results approached the LightGBM top-SNP baseline (macro-F1 0.3354) but remained below balanced SNP-MLP baselines, which reached approximately 0.350-0.354 macro-F1 across alpha0.40-alpha0.60 settings. Accuracy and MAE showed the expected trade-off: tree baselines retained higher accuracy, whereas stronger class balancing improved macro-F1 at some cost to accuracy and MAE. (d) Per-trait deterministic test performance for the best RiceGeneFormer variant (expected-score distillation weight 0.10). Binary or low-cardinality traits such as CUDI_CODE_REPRO and PTH had higher macro-F1, whereas strongly imbalanced multi-class traits such as CUST_REPRO and SPKF remained difficult. (e) Relationship between training-set class imbalance and final RiceGeneFormer macro-F1, illustrating that several low-macro-F1 traits had large dominant-class fractions.
+(a-c) Deterministic test-role comparison among final RiceGeneFormer variants and top-SNP baselines. RiceGeneFormer without distillation reached test macro-F1 0.3229±0.0062, while weak expected-score distillation with weight 0.10 reached 0.3292±0.0057. These results were close to the LightGBM top-SNP baseline (macro-F1 0.3380) but remained below balanced SNP-MLP baselines, which reached 0.3644±0.0106 at alpha0.40 and 0.3781±0.0029 at alpha0.60. Accuracy and MAE showed the expected trade-off: tree and top-SNP baselines retained higher accuracy or lower ordinal error, whereas stronger class balancing improved macro-F1 at some cost to accuracy and MAE. (d) Per-trait deterministic test performance for the best RiceGeneFormer variant (expected-score distillation weight 0.10). Binary or low-cardinality traits such as CUDI_CODE_REPRO and PTH had higher macro-F1, whereas strongly imbalanced multi-class traits such as CUST_REPRO and SPKF remained difficult. (e) Relationship between training-set class imbalance and final RiceGeneFormer macro-F1, illustrating that several low-macro-F1 traits had large dominant-class fractions.
 
 Source data: `docs/figure_source_data/fig3abc_main_performance.csv`, `fig3de_per_trait_performance.csv`, `docs/FINAL_PER_TRAIT_METRICS_RGF_W010_TEST.tsv`, and `docs/CORE_TRAIT_CLASS_DISTRIBUTION.tsv`.
 
@@ -31,3 +31,11 @@ Definitions: macro-F1 is the unweighted mean of per-class F1 scores; MAE is mean
 Source data: `docs/figure_source_data/fig4a_distillation_macro_f1.csv`, `fig4b_graph_ablation.csv`, and `fig4c_mapping_ablation.csv`.
 
 Interpretation boundary: the graph and mapping results are bounded pilots. They do not show that biological graphs or SNP-to-gene mapping are generally unimportant; they show that these particular implementations did not yield robust predictive gains in the present 3K Rice random-split setting.
+
+## Supplementary Figure 1. Per-trait method comparison on the deterministic test role
+
+(a) Heatmap of test macro-F1 for each core ordinal trait across RiceGeneFormer with expected-score distillation weight 0.10, LightGBM top512, XGBoost top512, SNP-MLP alpha0.40 and SNP-MLP alpha0.60. Stars mark the best macro-F1 method within each trait. (b) Number of traits for which each method was best by macro-F1. (c) Traits with the largest macro-F1 gap between the best method and RiceGeneFormer w=0.10, highlighting where the gene-aware model remains furthest from the strongest top-SNP baseline.
+
+Source data: `docs/figure_source_data/figs1_per_trait_method_comparison.csv`, `figs1_best_method_counts.csv`, and `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.tsv`.
+
+Interpretation boundary: this supplementary figure compares predictive performance only. It does not evaluate interpretability, biological mechanism recovery or external generalization beyond the current random-split test role.

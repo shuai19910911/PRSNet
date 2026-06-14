@@ -7,6 +7,8 @@ Source artifacts:
 - LightGBM/XGBoost test-role metrics: `data/3krice/processed/*_top512_e40_test_8566247/*_metrics.tsv`
 - SNP-MLP per-trait test rerun: `data/3krice/processed/snp_mlp_test_pertrait_summary_8566261.tsv`
 - Machine-readable combined table: `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.tsv`
+- Supplementary figure: `docs/figures/figs1_per_trait_method_comparison.svg` / `.pdf` / `.tiff`
+- Figure source data: `docs/figure_source_data/figs1_per_trait_method_comparison.csv` and `figs1_best_method_counts.csv`
 
 ## Per-trait macro-F1 summary
 
@@ -28,5 +30,6 @@ Source artifacts:
 - SNP-MLP alpha0.60 is the best per-trait macro-F1 method for most traits, confirming that the top-SNP neural baseline is the strongest macro-F1 reference under the current random split.
 - RiceGeneFormer remains competitive on several easier or lower-cardinality traits but is not the best method in this per-trait test-role comparison.
 - CUST_REPRO and SPKF remain difficult for all methods by macro-F1, consistent with severe class imbalance and multi-class ordinal structure.
+- The figure-level summary marks one best macro-F1 method per trait and highlights the largest gaps between RiceGeneFormer and the best top-SNP baseline.
 
 Definitions: macro-F1 is the unweighted mean of per-class F1 scores, so minority classes contribute equally; MAE is mean absolute error in ordinal class units, lower is better.
