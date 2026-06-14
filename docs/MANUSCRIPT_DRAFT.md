@@ -51,9 +51,9 @@ The final model family used gated top-SNP fusion rather than simple additive fus
 
 ### Result 3. Strong top-SNP baselines define the predictive ceiling
 
-Before interpreting RiceGeneFormer, we established marker-level baselines using train-fold top SNPs selected under the same leakage-control rules. LightGBM reached macro-F1 0.3354, accuracy 0.6271 and MAE 0.5547, while XGBoost reached macro-F1 0.3115, accuracy 0.6274 and MAE 0.5662. These tree baselines showed that top-SNP features alone carried substantial predictive signal and formed a stringent reference point for the gene-aware model.
+Before interpreting RiceGeneFormer, we established marker-level baselines using train-fold top SNPs selected under the same leakage-control rules and evaluated them on the same test role used for final RiceGeneFormer reporting. LightGBM reached macro-F1 0.3380, accuracy 0.6263 and MAE 0.5630, while XGBoost reached macro-F1 0.3161, accuracy 0.6332 and MAE 0.5512. These tree baselines showed that top-SNP features alone carried substantial predictive signal and formed a stringent reference point for the gene-aware model.
 
-Balanced SNP-MLP baselines further raised the macro-F1 ceiling. With class-balance interpolation alpha0.40, SNP-MLP reached macro-F1 0.3502±0.0117, accuracy 0.6141±0.0097 and MAE 0.5697±0.0108 across three seeds. Increasing the interpolation strength to alpha0.60 gave macro-F1 0.3544±0.0112, but reduced accuracy to 0.5961±0.0086 and increased MAE to 0.5976±0.0087. Thus, stronger class balancing improved minority-class macro-F1, but the improvement came with a measurable accuracy and ordinal-error trade-off.
+Balanced SNP-MLP baselines further raised the macro-F1 ceiling. With class-balance interpolation alpha0.40, SNP-MLP reached test macro-F1 0.3644±0.0106, accuracy 0.6317±0.0023 and MAE 0.5639±0.0117 across three seeds. Increasing the interpolation strength to alpha0.60 gave macro-F1 0.3781±0.0029, but reduced accuracy to 0.6148±0.0091 and increased MAE to 0.5899±0.0176. Thus, stronger class balancing improved minority-class macro-F1, but the improvement came with a measurable accuracy and ordinal-error trade-off.
 
 ### Result 4. Gated top-SNP fusion and mild class balancing yield the strongest RiceGeneFormer configuration
 
@@ -107,7 +107,7 @@ Checkpoints were selected by validation macro-F1 for the final model family. The
 
 ### Baselines
 
-LightGBM and XGBoost baselines were trained as one classifier per core ordinal trait using the same train-fold top-SNP selection rule. The tree baselines used 512 top SNPs per trait and bounded estimator settings for the primary smoke-style comparison. XGBoost labels were encoded to contiguous training classes where necessary and then mapped back to the original ordinal labels before computing accuracy, MAE, macro-F1 and rank correlation.
+LightGBM and XGBoost baselines were trained as one classifier per core ordinal trait using the same train-fold top-SNP selection rule. The tree baselines used 512 top SNPs per trait and bounded estimator settings for the primary comparison. For both tree baselines, observed training labels were encoded to contiguous classes where necessary and then mapped back to the original ordinal labels before computing accuracy, MAE, macro-F1 and rank correlation on the requested evaluation role.
 
 The SNP-MLP baseline used the union of train-fold top SNPs across the ten core traits. The main SNP-MLP architecture used a two-layer feed-forward encoder with hidden dimension 256, dropout 0.4 and multi-head trait classifiers. Class-balanced loss was computed only from training labels. The balance-alpha grid interpolated between unweighted and inverse-frequency class weights; alpha0.40 and alpha0.60 were the strongest final baseline settings, with three seeds used for mean and standard deviation estimates.
 
@@ -149,11 +149,12 @@ Ready now:
 - main performance numbers.
 - draft main results table in `docs/MAIN_RESULTS_TABLE.md`.
 - per-trait RiceGeneFormer final table.
+- supplementary per-trait method comparison in `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.md` and `docs/SUPPLEMENTARY_PER_TRAIT_RESULTS.tsv`.
 - class-distribution table.
 
 Still required before submission:
 - exact citation formatting, license wording and local-release provenance for data/annotation/STRING resources; see `docs/DATA_SOURCES_AND_CITATIONS.md`.
-- per-trait baseline metrics if required for supplementary comparison.
+- per-trait baseline metrics are now summarized for the main test-role methods; remaining supplement work is figure/table formatting rather than metric generation.
 - final figure polish and legend shortening; current draft legends are in `docs/FIGURE_LEGENDS.md`.
 - code/data repository and DOI strategy.
 - target journal decision.
