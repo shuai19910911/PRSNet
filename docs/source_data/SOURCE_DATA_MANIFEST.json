@@ -21,6 +21,11 @@
       "source": "data/3krice/processed/gene_attention_w010_test_aggregate/gene_attention_aggregate_manifest.json"
     },
     {
+      "bytes": 25168,
+      "file": "known_gene_attention_ranks.tsv",
+      "source": "data/3krice/processed/gene_attention_known_gene_overlap_w010_test/known_gene_attention_ranks.tsv"
+    },
+    {
       "bytes": 425,
       "file": "known_gene_overlap_manifest.json",
       "source": "data/3krice/processed/gene_attention_known_gene_overlap_w010_test/known_gene_overlap_manifest.json"
