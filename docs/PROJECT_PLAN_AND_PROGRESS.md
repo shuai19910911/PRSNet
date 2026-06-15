@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 18:26:52 CST
+最后更新：2026-06-15 18:49:29 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -352,6 +352,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 18:20:00 CST] 按用户反馈重新设计 SCI/BIB 图表体系：新增 `docs/SCI_FIGURE_REDESIGN_PLAN.md`，将原 4 张偏 slide/示意图的图组扩展为 7 张主图 + 4 张补图的 source-data-driven 体系，包括 benchmark/leakage 设计、RiceGeneFormer 架构、主性能、hard-trait/ordinal diagnostics、cross-region boundary、ablation boundary、gene-attention interpretation audit。新增 R-only 作图脚本 `scripts/figures/make_sci_bib_figures.R`，使用 ggplot2/patchwork/ggrepel/svglite/ragg，从 `docs/figure_source_data/` 和 `docs/source_data/` 读取真实结果，导出 SVG/PDF/TIFF/PNG 到 `docs/figures_sci_r/`，并输出对应 source-data CSV 到 `docs/figure_source_data_sci_r/`；新增 `docs/figure_source_data_sci_r/README.md` 规定每张图必须有 source data、统一颜色、禁止 SOTA/robustness/biological-validation 过度表述。当前环境执行 `Rscript scripts/figures/make_sci_bib_figures.R` 返回 `Rscript: command not found`，所以尚不能在本机渲染最终 R 图；`git diff --check` 已通过。
 
 - [2026-06-15 18:26:52 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；已验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过，关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境可导入 PyTorch `2.6.0+cu124`（CUDA build 12.4，登录节点 `cuda_available=False` 正常）；`scripts/model/rice_geneformer_omtl_smoke.py` 与 `scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 已通过 `py_compile`/`sh -n`、静态安全扫描和独立复审（passed=true，无 security_concerns / logic_errors），准备进入短 GPU smoke 提交流程。继续遵守 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 18:49:29 CST] Cron 完成短 GPU smoke：先复核 SLURM 中 `gpu10` 分区仍不可用（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`，`sinfo` 仅显示 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`），随后通过 `ssh gpu10` 直接检查 GPU 环境，确认主机可达、PyTorch `2.6.0+cu124` 且 CUDA 可用；因物理 GPU0 已占用约 35.5/40 GB，仅运行极小 smoke（batch=4、genes=256、max_snps_per_gene=32、hidden_dim=64）。执行 `sh scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 成功，输出 `status=ok`、`cuda_available=true`、`device=cuda`、`x_shape=3000x365710`、`y_shape=3000x35`、`traits=35`、`graph_edges_used=2530`、`logit_shape=4x35`、loss `4.774356842041016`、grad_norm `27.831610292162427`；manifest/report 写入本地数据区 `data/3krice/processed/rice_geneformer_omtl_smoke/`，不上传 GitHub。该步骤验证最小 RiceGeneFormer-OMTL 数据加载、CUDA forward/backward、graph edge 使用和输出记录链路均可工作；下一步仍应在 GPU 空闲时再跑更长 bounded pilot，而不是基于 smoke 作性能结论。
 
 ## 8. 下一步执行优先级
 
