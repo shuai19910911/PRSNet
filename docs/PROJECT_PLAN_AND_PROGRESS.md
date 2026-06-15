@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 22:14:55 CST
+最后更新：2026-06-15 22:32:41 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -365,6 +365,7 @@ baseline + ablation：2–5 天
 - [2026-06-15 21:35:35 CST] Cron 例行复核 Phase 5 输入 smoke 与提交状态：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境中 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常；SLURM 仍不暴露 GPU 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`）。本轮未新增训练或数据产物；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 21:57:20 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；脚本化验证 `model_input_smoke_manifest.json` 和 `model_input_smoke_report.tsv` 通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前无新增训练/数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 22:14:55 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；当前主线保持 BIB benchmark/diagnostic 写作与 DOI-backed release 准备，继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+- [2026-06-15 22:32:41 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 复核通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；最小 RiceGeneFormer-OMTL/PyTorch/GPU smoke 路径已在前序 tick 验证，当前继续保持 BIB benchmark/diagnostic 写作与 DOI-backed release 准备；只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
