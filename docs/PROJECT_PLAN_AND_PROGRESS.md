@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 21:57:20 CST
+最后更新：2026-06-15 22:14:55 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -364,6 +364,7 @@ baseline + ablation：2–5 天
 - [2026-06-15 21:10:20 CST] Cron 完成新 R 版 7 主图体系同步进最终投稿包：先复核 Phase 5 输入 smoke 作业 `8562921` 仍为 `COMPLETED|0:0|00:00:08`，manifest/report 继续通过（`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`）。随后修订本地打包脚本，使 `docs/final_submission_package_20260615/` 改用 `docs/figures_sci_r/` 的 7 张 SCI/BIB R 图，并复制 `docs/figure_source_data_sci_r/` 的轻量 source-data CSV；显式验证 full zip 包含高分辨率 SCI 图，lite zip 仅保留 SVG/文本/CSV。为打包补装 PRSNet 环境依赖 `python-docx`、`pypdf`、`reportlab` 后重跑成功：完整包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615.zip` 为 9.1 MB，轻量包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615_LITE.zip` 为 4.1 MB；`PACKAGE_MANIFEST.json` 检查项 `claim_boundary_frozen`、`sci_figures_copied`、`sci_figure_source_data_copied` 均为 true。代码侧已通过 `py_compile`、`git diff --check`、静态安全扫描和独立复审；未上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 21:35:35 CST] Cron 例行复核 Phase 5 输入 smoke 与提交状态：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境中 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常；SLURM 仍不暴露 GPU 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`）。本轮未新增训练或数据产物；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 21:57:20 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；脚本化验证 `model_input_smoke_manifest.json` 和 `model_input_smoke_report.tsv` 通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前无新增训练/数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+- [2026-06-15 22:14:55 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；当前主线保持 BIB benchmark/diagnostic 写作与 DOI-backed release 准备，继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
