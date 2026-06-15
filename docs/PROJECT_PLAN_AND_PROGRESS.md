@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 08:01:14 CST
+最后更新：2026-06-15 08:38:48 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -290,6 +290,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 07:43:03 CST] Cron 复核并推进 Phase 5 后续准备：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json`/report 继续全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`，登录节点无 GPU 所以 `cuda_available=False` 正常；最小 RiceGeneFormer-OMTL CPU forward/backward smoke 复跑通过（`status=ok`、`logit_shape=2x35`、loss finite、grad_norm `23.806`）。按独立复审意见补强 `rice_geneformer_omtl_train.py` bounded smoke-training 参数上限（batch≤64、hidden≤256、epochs≤50、steps/epoch≤200）并给 GPU smoke wrapper 增加 `#SBATCH --time=00:20:00`；随后 `py_compile`、`sh -n`、参数上限失败测试、静态安全扫描和独立复审均通过。当前 SLURM 仍不暴露 `gpu10` 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`、GRES `(null)`；`sbatch --test-only -p gpu10` 返回 invalid partition），因此未提交 GPU smoke。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 08:01:14 CST] Cron 复核 Phase 5 输入 smoke 与下一阶段准备：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境为 CUDA 版 PyTorch `2.6.0+cu124`（CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常）；最小 RiceGeneFormer-OMTL CPU smoke 复跑通过，输出 `status=ok`、`logit_shape=2x35`、loss `6.2836`、grad_norm `23.619`。最小 smoke/training 代码与 GPU wrapper 已存在并通过本轮 `py_compile`、`sh -n` 和前序参数上限/静态扫描/独立复审；当前 SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），因此本轮未提交 GPU smoke。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 08:38:48 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练作业；PyTorch/最小 RiceGeneFormer smoke 代码已在前序 tick 验证可用，当前主线保持 BIB benchmark/diagnostic 写作与 release 准备。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
