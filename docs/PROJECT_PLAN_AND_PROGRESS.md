@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 16:50:53 CST
+最后更新：2026-06-15 17:28:24 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -340,6 +340,10 @@ baseline + ablation：2–5 天
 - [2026-06-15 16:50:53 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键值仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，10 个 core GWAS p-value shape 均为 365,710。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常；SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），因此本轮未提交 GPU smoke/训练。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 17:09:31 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 已再次验证通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮没有新增训练、数据或代码产物；仅同步 `docs/PROJECT_PLAN_AND_PROGRESS.md` 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 17:24:30 CST] 按用户要求完整阅读并对照至少 10 篇相似 BIB 文章后再次优化稿件：新增 `docs/BIB_10_ARTICLE_READING_MATRIX_AND_SELF_AUDIT.md`，记录 11 篇 BIB genomic-prediction / benchmark / diagnostic 文章（GWKBR、WheatGP、multi-population GBLUP、GNN transcriptomic prediction、GWANN、drug-response cross-dataset benchmark、embedding drug-response benchmark、m6A Nanopore benchmark、somatic variant-caller benchmark、blind protein-ligand scoring benchmark、AMR phenotype benchmark）的结构和写法启示。按共性重写/补强 `docs/MANUSCRIPT_BIB_FULL_EN.md` 与 `docs/MANUSCRIPT_BIB_FULL_ZH.md`：Introduction 新增 benchmark competitiveness ≠ generalization、graph/attention 只是需验证假设的 BIB 式论证；Results 新增 practical recommendation，明确当前预测优先 baseline 是 balanced SNP-MLP/LightGBM，RiceGeneFormer 的主要价值是 leakage-aware gene-aware diagnostic framework。新增 `docs/BIB_FINAL_STRUCTURE_SELF_AUDIT.md`，逐项审查 title、abstract、key points、evidence ladder、negative controls、Methods reproducibility、Data/Code availability 和 bilingual consistency。验证通过：`git diff --check`、英文/中文稿关键段落存在性检查、10+ article/self-audit 文件检查和 overclaim token scan 均通过；当前仍不宣称 SOTA、robustness 或 biological discovery。
+
+- [2026-06-15 17:28:24 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 复核通过，关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境可导入 CUDA 版 PyTorch `2.6.0+cu124`，登录节点无 GPU所以 `cuda_available=False` 正常；最小 RiceGeneFormer-OMTL 代码与 GPU wrapper 已在前序 tick 通过语法/静态/独立复审。本轮没有新增训练、数据或代码产物；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
