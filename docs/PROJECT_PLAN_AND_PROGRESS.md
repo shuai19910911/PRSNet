@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 13:30:22 CST
+最后更新：2026-06-15 13:36:27 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -319,6 +319,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 13:11:27 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；脚本化验证 manifest 全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test 存在。`gpu10` 本轮可 SSH 读取 GPU 状态，但 8 张 A100 均有较高显存占用（约 24.6–40.1 GB/40 GB 已用），因此未启动新的 GPU smoke/训练；本轮仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 13:30:22 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test 均存在。`PRSNet` 环境复核为 PyTorch `2.6.0+cu124`，登录节点无 GPU 所以 `cuda_available=False` 正常；本轮未新增训练作业或数据产物，仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 13:36:27 CST] Phase 5 后续最小模型输入/训练 smoke 代码复核：`py_compile`、SLURM wrapper `sh -n`、SBATCH 绝对日志路径检查、静态安全扫描均通过；独立复审先发现 smoke/train 脚本 split 校验只按 `sample_index`、未按 `sample_id` fail-closed，已在本地脚本中补强空/重复 `sample_id` 拒绝逻辑，并复跑 CPU forward/backward smoke 通过（`status=ok`、`logit_shape=2x35`、loss finite、grad_norm `19.707`、`graph_edges_used=290`）。复审第二轮通过，无 blocking security/logic issue。按项目发布约束，本轮 GitHub 仍只同步 docs 轻量进展，脚本、数据、日志、配置、权重和二进制产物不上传。
 
 ## 8. 下一步执行优先级
 
