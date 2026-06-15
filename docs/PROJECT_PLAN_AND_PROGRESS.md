@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 08:56:44 CST
+最后更新：2026-06-15 09:22:33 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -294,6 +294,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 08:38:48 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练作业；PyTorch/最小 RiceGeneFormer smoke 代码已在前序 tick 验证可用，当前主线保持 BIB benchmark/diagnostic 写作与 release 准备。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 08:56:44 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮无新增训练或数据产物；继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 09:22:33 CST] Cron 复核 Phase 5 输入 smoke 并补强最小模型 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。按独立复审意见补强本地未跟踪 `scripts/model/rice_geneformer_omtl_smoke.py`：新增 trait label finite/integer/range 检查、graph edge_index 加载与 MeanGraphEncoder 消费、stdout JSON `allow_nan=False`；随后 `py_compile`、SLURM wrapper `sh -n`、静态安全扫描、bounded CPU smoke 与独立复审均通过，CPU smoke 输出 `status=ok`、`torch=2.6.0+cu124`、`genes_used=32`、`graph_edges_used=290`、`logit_shape=2x35`、loss finite、grad_norm positive。当前 SLURM 仍不暴露 `gpu10` 分区（`sinfo -p gpu10` 无节点），因此未提交 GPU smoke；若在 gpu10 shell 可用，可手动运行 `GPU_IDS="0" sh scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 或先修正为站点支持的 GPU 提交流程。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
