@@ -56,3 +56,7 @@ In 3K rice genotype-to-phenotype prediction, we show that a leakage-aware gene-l
 3. Final decision on whether diagnostic Table 2 remains main text or supplement.
 4. Shortened figure legends matched to final figure panel layout.
 5. Final source-data DOI and release tag.
+
+## BIB style standard for final rewrite
+
+The final manuscript should follow `docs/BIB_STYLE_AND_SUBMISSION_WRITING_GUIDE.md`. The target is a BIB-style benchmark/methods article of approximately 7,000-8,000 main-text words unless the final submission system enforces a stricter article-type limit. The current abstract already fits the recommended 250-300 word range. The final rewrite should use an evidence-ladder Results structure, detailed Methods sufficient for reproduction, up to 5 key points, up to 6-8 keywords, and explicit data/code availability wording that remains future-tense until a DOI or release tag exists.

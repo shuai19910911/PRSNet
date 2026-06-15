@@ -4,7 +4,8 @@
   "exported_formats": [
     "svg",
     "pdf",
-    "tiff"
+    "tiff",
+    "png"
   ],
   "figures": [
     "fig1_leakage_safe_workflow",

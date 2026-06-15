@@ -4,7 +4,8 @@
   "exported_formats": [
     "svg",
     "pdf",
-    "tiff"
+    "tiff",
+    "png"
   ],
   "figures": [
     "figs1_per_trait_method_comparison"

@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 16:10:25 CST
+最后更新：2026-06-15 16:31:54 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -335,9 +335,12 @@ baseline + ablation：2–5 天
 
 - [2026-06-15 16:10:25 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，batch MaxRSS `1136K`；已验证 `data/3krice/processed/model_input_smoke/model_input_smoke_manifest.json` 和 `model_input_smoke_report.tsv` 均通过，关键验收值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境中 PyTorch 可导入：`torch 2.6.0+cu124`，登录节点 `cuda_available=False` 属预期；已进入 RiceGeneFormer-OMTL dataloader/model smoke 准备阶段。本次只更新 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
+- [2026-06-15 16:25:00 CST] 按用户要求生成接近投稿级 BIB manuscript 与中文版本，并优化图表：新增 `docs/MANUSCRIPT_BIB_FULL_EN.md`（完整英文稿，含 Title/Abstract/Key points/Keywords/Introduction/Results/Methods/Discussion/Data and code availability/Figure legends/reference anchors）和 `docs/MANUSCRIPT_BIB_FULL_ZH.md`（中文对应稿）。重绘并优化 manuscript figures：`scripts/figures/make_manuscript_figures.py` 现在输出 SVG/PDF/TIFF/PNG，并清理 SVG/CSV trailing whitespace；Figure 4 从旧 roadmap 改为真实 ablation + cross-region + GWAS-top2048 diagnostic panel；Figure 2/3/4 修正拥挤标签和重叠文字；`scripts/figures/make_supplementary_per_trait_figure.py` 同步输出 PNG 并清理 SVG/CSV。验证通过：figure scripts `py_compile` 通过、主图和补充图脚本成功重跑、`git diff --check` 通过、英文/中文稿核心章节检查通过，5 个 PNG 预览文件均存在。
+- [2026-06-15 16:31:54 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验证通过，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮只同步 docs/source-data/SVG 等轻量文档产物到 GitHub，继续不上传数据、日志、脚本、配置、权重或 PDF/PNG/TIFF 二进制产物。
+
 ## 8. 下一步执行优先级
 
 1. cross-region deterministic benchmark 与当前 gene-attention/known-gene 初审均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. `docs/BIB_STYLE_AND_SUBMISSION_WRITING_GUIDE.md` 已将 BIB 调研结果转化为终稿写作标准；下一步应按该指南重写 `docs/MANUSCRIPT_DRAFT.md` 为 7,000-8,000 word submission-level manuscript，并准备 DOI-backed GitHub/Zenodo release/tag，在 DOI/reference 更新后重复 overclaim scan。
+4. `docs/MANUSCRIPT_BIB_FULL_EN.md` 与 `docs/MANUSCRIPT_BIB_FULL_ZH.md` 已形成接近投稿级主稿；下一步应准备 DOI-backed GitHub/Zenodo release/tag，完成 reference style / DOI / repository accession 后重复 overclaim scan，并决定是否将英文稿进一步扩展到 BIB 指南建议的 7,000-8,000 word 主文长度。
