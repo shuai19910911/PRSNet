@@ -1,0 +1,19 @@
+step,role,allowed
+GWAS priors,Train,allowed
+Top-SNP features,Train,allowed
+Class weights,Train,allowed
+Checkpoint,Train,allowed
+Calibration,Train,allowed
+Final metrics,Train,blocked
+GWAS priors,Validation,blocked
+Top-SNP features,Validation,blocked
+Class weights,Validation,blocked
+Checkpoint,Validation,allowed
+Calibration,Validation,allowed
+Final metrics,Validation,blocked
+GWAS priors,Test,blocked
+Top-SNP features,Test,blocked
+Class weights,Test,blocked
+Checkpoint,Test,blocked
+Calibration,Test,blocked
+Final metrics,Test,reported only

@@ -1,0 +1,6 @@
+module,qualitative_utility
+trait attention,0.45
+top-SNP branch,0.78
+gated fusion,0.85
+mild balance,0.7
+distillation,0.25

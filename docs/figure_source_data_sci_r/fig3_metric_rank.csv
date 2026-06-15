@@ -1,0 +1,22 @@
+method,metric,rank
+RGF no distill,MacroF1,6
+RGF no distill,Accuracy,6
+RGF no distill,MAE,7
+RGF w=0.10,MacroF1,4
+RGF w=0.10,Accuracy,7
+RGF w=0.10,MAE,6
+RGF w=0.20,MacroF1,5
+RGF w=0.20,Accuracy,5
+RGF w=0.20,MAE,5
+LightGBM,MacroF1,3
+LightGBM,Accuracy,3
+LightGBM,MAE,2
+XGBoost,MacroF1,7
+XGBoost,Accuracy,1
+XGBoost,MAE,1
+SNP-MLP α=0.40,MacroF1,2
+SNP-MLP α=0.40,Accuracy,2
+SNP-MLP α=0.40,MAE,3
+SNP-MLP α=0.60,MacroF1,1
+SNP-MLP α=0.60,Accuracy,4
+SNP-MLP α=0.60,MAE,4

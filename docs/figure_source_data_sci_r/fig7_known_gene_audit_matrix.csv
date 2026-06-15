@@ -1,0 +1,17 @@
+gene,audit,status
+SD1,visible_prefix,FALSE
+SD1,recovered_gwas_top2048,FALSE
+GS3,visible_prefix,FALSE
+GS3,recovered_gwas_top2048,FALSE
+GW2,visible_prefix,FALSE
+GW2,recovered_gwas_top2048,FALSE
+qSW5/GW5,visible_prefix,FALSE
+qSW5/GW5,recovered_gwas_top2048,FALSE
+DEP1,visible_prefix,FALSE
+DEP1,recovered_gwas_top2048,FALSE
+Hd1,visible_prefix,FALSE
+Hd1,recovered_gwas_top2048,FALSE
+Hd3a,visible_prefix,FALSE
+Hd3a,recovered_gwas_top2048,FALSE
+Gn1a,visible_prefix,TRUE
+Gn1a,recovered_gwas_top2048,FALSE

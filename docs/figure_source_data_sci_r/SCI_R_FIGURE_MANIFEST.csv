@@ -1,0 +1,8 @@
+figure,stem,conclusion
+Figure 1,fig1_sci_benchmark_design,Leakage-aware ordinal benchmark design is explicit and source-data-driven.
+Figure 2,fig2_sci_architecture_evidence,RiceGeneFormer combines gene tokens with a controlled top-SNP shortcut.
+Figure 3,fig3_sci_main_benchmark,RiceGeneFormer approaches LightGBM but remains below balanced SNP-MLP.
+Figure 4,fig4_sci_hard_trait_diagnostics,Hard imbalanced traits explain much of the remaining performance gap.
+Figure 5,fig5_sci_cross_region_boundary,Cross-region benchmarks do not support a robustness advantage.
+Figure 6,fig6_sci_ablation_boundaries,Ablations define boundaries rather than stable biological gains.
+Figure 7,fig7_sci_gene_attention_audit,Gene attention is diagnostic only under bounded gene selection.
