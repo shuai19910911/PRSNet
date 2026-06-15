@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 15:32:23 CST
+最后更新：2026-06-15 15:49:48 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -329,6 +329,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 15:13:38 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证通过，核心值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境仍可导入 CUDA 版 PyTorch `2.6.0+cu124`（登录节点无 GPU所以 `cuda_available=False` 正常）。本轮未新增训练或数据产物；仅更新并准备同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 15:32:23 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 继续通过，核心值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；按项目约束仅更新 `docs/PROJECT_PLAN_AND_PROGRESS.md` 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 15:49:48 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 manifest/report 全部通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test 存在且为 `1586/340/340`。本轮未新增训练、数据或代码产物；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
