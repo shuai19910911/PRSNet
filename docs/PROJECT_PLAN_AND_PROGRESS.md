@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 22:51:50 CST
+最后更新：2026-06-15 23:12:53 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -367,6 +367,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 22:14:55 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次验证通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；当前主线保持 BIB benchmark/diagnostic 写作与 DOI-backed release 准备，继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 22:32:41 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 复核通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；最小 RiceGeneFormer-OMTL/PyTorch/GPU smoke 路径已在前序 tick 验证，当前继续保持 BIB benchmark/diagnostic 写作与 DOI-backed release 准备；只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 - [2026-06-15 22:51:50 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；脚本化验证 manifest/report 全部通过（`VALIDATION_OK`）：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，10 个 core GWAS p-value shape 均为 365,710。当前没有新增训练、数据或代码产物；项目保持 BIB benchmark/diagnostic 写作、R 版 7 主图与 DOI-backed release 准备阶段，继续仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 23:12:53 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 仍确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 manifest/report 通过（`VALIDATION_OK`），关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，10 个 core GWAS p-value shape 均为 365,710。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；本轮没有新增训练、数据或代码产物，继续仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 ## 8. 下一步执行优先级
 
