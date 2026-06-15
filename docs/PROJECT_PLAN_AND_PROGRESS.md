@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-16 06:03:02 CST
+最后更新：2026-06-16 06:23:28 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -396,6 +396,8 @@ baseline + ablation：2–5 天
 - [2026-06-16 05:44:07 CST] Cron 例行复核 Phase 5 输入 smoke 与后续 GPU 条件：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 全部通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；已存在的最小 RiceGeneFormer-OMTL GPU smoke 产物继续验证为 `status=ok`、`device=cuda`、`batch_size=4`、`genes_used=256`、`graph_edges_used=2530`、`logit_shape=4x35`。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），本轮 `ssh gpu10` 可达但 8 张 A100-40G 均已有较高显存占用（约 23.1–39.9 GB/卡，GPU0 约 35.5 GB 已用），因此未启动新的 GPU smoke/训练。继续仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 - [2026-06-16 06:03:02 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`，10 个 core GWAS p-value shape 均为 365,710。PRSNet 环境 PyTorch 复核为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），本轮 `ssh gpu10` 状态查询 25 秒超时，因此未启动新的 GPU smoke/训练。继续仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制训练产物。
+
+- [2026-06-16 06:23:28 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 已验证通过，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 复核为 `2.6.0+cu124`，登录节点 `cuda_available=False` 属正常；SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`）。本轮 `ssh gpu10` 可达，但 8 张 A100-40G 均已有较高显存占用（约 23.1–39.6 GB/卡，GPU0 约 35.5 GB 已用），因此未启动新的 GPU smoke/训练。继续仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 ## 8. 下一步执行优先级
 
