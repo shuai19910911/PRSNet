@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 21:10:20 CST
+最后更新：2026-06-15 21:35:35 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -362,11 +362,12 @@ baseline + ablation：2–5 天
 - [2026-06-15 20:25:31 CST] Cron 例行复核 Phase 5 输入 smoke 与后续 GPU 提交条件：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 全部通过（`VALIDATION_OK`），关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 仍为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 正常；SLURM 仍不暴露 `gpu10` 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`，`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），本轮 `ssh gpu10` 状态检查 25 秒超时，因此未启动新的 GPU smoke/训练。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-15 21:10:20 CST] Cron 完成新 R 版 7 主图体系同步进最终投稿包：先复核 Phase 5 输入 smoke 作业 `8562921` 仍为 `COMPLETED|0:0|00:00:08`，manifest/report 继续通过（`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`）。随后修订本地打包脚本，使 `docs/final_submission_package_20260615/` 改用 `docs/figures_sci_r/` 的 7 张 SCI/BIB R 图，并复制 `docs/figure_source_data_sci_r/` 的轻量 source-data CSV；显式验证 full zip 包含高分辨率 SCI 图，lite zip 仅保留 SVG/文本/CSV。为打包补装 PRSNet 环境依赖 `python-docx`、`pypdf`、`reportlab` 后重跑成功：完整包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615.zip` 为 9.1 MB，轻量包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615_LITE.zip` 为 4.1 MB；`PACKAGE_MANIFEST.json` 检查项 `claim_boundary_frozen`、`sci_figures_copied`、`sci_figure_source_data_copied` 均为 true。代码侧已通过 `py_compile`、`git diff --check`、静态安全扫描和独立复审；未上传数据、日志、脚本、配置、权重或二进制产物。
+- [2026-06-15 21:35:35 CST] Cron 例行复核 Phase 5 输入 smoke 与提交状态：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 继续满足 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境中 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点无 GPU所以 `cuda_available=False` 正常；SLURM 仍不暴露 GPU 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08` 且 GRES 为 `(null)`）。本轮未新增训练或数据产物；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
-1. cross-region deterministic benchmark 与当前 gene-attention/known-gene 初审均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
-2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
-3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. 当前图表已替换为 `docs/SCI_FIGURE_REDESIGN_PLAN.md` 中的 7 主图体系，并已由 R 脚本生成到 `docs/figures_sci_r/`；下一步应将新图同步进最终投稿包并重打包。
-5. `docs/final_submission_package_20260615/` 已形成旧图版本的 BIB 交付包；下一步应在新 R 图确认后重打包，并准备 DOI-backed GitHub/Zenodo release/tag，完成 reference style / DOI / repository accession 后重复 overclaim scan。
+1. 当前 BIB/SCI 图表体系已替换为 R 版 7 主图，并已同步进 `docs/final_submission_package_20260615/`；完整包和轻量包均已重打包验证。
+2. cross-region deterministic benchmark 与 gene-attention/known-gene 审核均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
+3. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；投稿主文需诚实报告该 baseline gap。
+4. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
+5. 下一步优先做 DOI-backed GitHub/Zenodo release/tag、正式 reference style / repository accession / third-party data license 核对，并在提交前重复 overclaim scan；继续避免上传 raw data、日志、脚本、配置、权重或二进制训练产物。
