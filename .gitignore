@@ -4,6 +4,7 @@
 /logs/
 /checkpoints/
 /PRSNet-2/
+/scripts/
 
 # Model/data artifacts
 *.npy
@@ -36,4 +37,9 @@ __pycache__/
 
 # SLURM/logs
 slurm-*.out
+*.out
+*.err
 *.log
+
+# Local notification markers
+.ricegeneformer_notify_seen

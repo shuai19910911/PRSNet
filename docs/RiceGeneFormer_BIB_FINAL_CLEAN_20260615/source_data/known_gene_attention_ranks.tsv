@@ -1,0 +1,141 @@
+symbol	gene_id	trait_family	source	trait	rank	attention_mean	in_exported_gene_set	chromosome	start	end
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	CUDI_CODE_REPRO	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	CULT_CODE_REPRO	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	CUNO_CODE_REPRO	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	LLT_CODE	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	PLT_CODE_POST	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	SDHT_CODE	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	PTH	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	SPKF	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	CUST_REPRO	not_in_first_2048_genes		False	1	38382385	38385469
+SD1	gene:Os01g0883800	plant height / semidwarf	RAP-DB search result: Os01g0883800 Gibberellin (GA) 20 oxidase 2	PSH	not_in_first_2048_genes		False	1	38382385	38385469
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	CUDI_CODE_REPRO	190	0.0007951556472107768	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	CULT_CODE_REPRO	658	0.0005178995779715478	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	CUNO_CODE_REPRO	91	0.0008556943503208458	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	LLT_CODE	3	0.0016682952409610152	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	PLT_CODE_POST	34	0.0012497429270297289	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	SDHT_CODE	50	0.0011272103292867541	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	PTH	119	0.0006917085265740752	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	SPKF	472	0.0005230389651842415	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	CUST_REPRO	144	0.0007393580744974315	True	1	5270449	5275585
+Gn1a	gene:Os01g0197700	grain number / panicle architecture	commonly cited rice cytokinin oxidase/dehydrogenase yield gene; verify before submission	PSH	21	0.0026408168487250805	True	1	5270449	5275585
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	CUDI_CODE_REPRO	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	CULT_CODE_REPRO	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	CUNO_CODE_REPRO	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	LLT_CODE	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	PLT_CODE_POST	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	SDHT_CODE	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	PTH	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	SPKF	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	CUST_REPRO	not_in_first_2048_genes		False	3	16729501	16735109
+GS3	gene:Os03g0407400	grain size	funplantgenes search result: GS3 controls grain size	PSH	not_in_first_2048_genes		False	3	16729501	16735109
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	PTH	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	SPKF	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	2	8115223	8121651
+GW2	gene:Os02g0244100	grain width/weight	curated from rice grain size literature; verify before submission	PSH	not_in_first_2048_genes		False	2	8115223	8121651
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	PTH	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	SPKF	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	5	5365122	5366701
+qSW5/GW5	gene:Os05g0187500	grain width	curated from rice grain size literature; verify before submission	PSH	not_in_first_2048_genes		False	5	5365122	5366701
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	CUDI_CODE_REPRO	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	CULT_CODE_REPRO	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	CUNO_CODE_REPRO	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	LLT_CODE	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	PLT_CODE_POST	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	SDHT_CODE	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	PTH	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	SPKF	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	CUST_REPRO	not_in_first_2048_genes		False	9	16411151	16415851
+DEP1	gene:Os09g0441900	panicle architecture	literature search result: DEP1 influences panicle architecture; verify RAP ID	PSH	not_in_first_2048_genes		False	9	16411151	16415851
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	PTH	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	SPKF	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	6	9336376	9338569
+Hd1	gene:Os06g0275000	heading date / flowering	curated from rice flowering literature; verify before submission	PSH	not_in_first_2048_genes		False	6	9336376	9338569
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	PTH	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	SPKF	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	6	2940004	2942452
+Hd3a	gene:Os06g0157700	heading date / flowering	curated from rice flowering literature; verify before submission	PSH	not_in_first_2048_genes		False	6	2940004	2942452
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	PTH	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	SPKF	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	6	2926823	2928474
+RFT1	gene:Os06g0157500	heading date / flowering	curated from rice flowering literature; verify before submission	PSH	not_in_first_2048_genes		False	6	2926823	2928474
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PTH	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	SPKF	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	7	9152377	9155030
+Ghd7	gene:Os07g0261200	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PSH	not_in_first_2048_genes		False	7	9152377	9155030
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PTH	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	SPKF	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	8	4332106	4334829
+DTH8/Ghd8	gene:Os08g0174500	heading date / plant height / yield	curated from rice flowering/yield literature; verify before submission	PSH	not_in_first_2048_genes		False	8	4332106	4334829
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	PTH	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	SPKF	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	10	17076098	17081344
+Ehd1	gene:Os10g0463400	heading date / flowering	curated from rice flowering literature; verify before submission	PSH	not_in_first_2048_genes		False	10	17076098	17081344
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	PTH	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	SPKF	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	8	25274541	25278696
+IPA1/SPL14	gene:Os08g0509600	plant architecture / panicle	curated from rice architecture literature; verify before submission	PSH	not_in_first_2048_genes		False	8	25274541	25278696
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	CUDI_CODE_REPRO	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	CULT_CODE_REPRO	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	CUNO_CODE_REPRO	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	LLT_CODE	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	PLT_CODE_POST	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	SDHT_CODE	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	PTH	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	SPKF	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	CUST_REPRO	not_in_first_2048_genes		False	9	20731589	20734728
+TAC1	gene:Os09g0529300	tiller angle / plant architecture	curated from rice architecture literature; verify before submission	PSH	not_in_first_2048_genes		False	9	20731589	20734728

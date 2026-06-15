@@ -1,0 +1,296 @@
+{
+  "package": "RiceGeneFormer BIB final clean submission package",
+  "created_at": "2026-06-15T21:23:05",
+  "claim_boundary": "BIB benchmark/diagnostic framework; no SOTA, robustness, or biological-discovery claim.",
+  "contents": {
+    "manuscripts": "English and Chinese markdown manuscripts",
+    "exports": "Word and PDF manuscript exports",
+    "figures": "7 final R-rendered SCI/BIB figures in SVG/PDF/TIFF/PNG",
+    "source_data": "lightweight source data used by the final figures and manuscript claims",
+    "audits": "submission, citation, risk, and data/code-availability audit documents"
+  },
+  "checks": {
+    "figures_7_by_4_formats": true,
+    "source_data_includes_known_gene_attention_ranks": true,
+    "no_raw_genotype_or_checkpoint_data": true,
+    "no_logs_or_slurm_outputs": true
+  },
+  "files": [
+    {
+      "path": "audits/BIB_10_ARTICLE_READING_MATRIX_AND_SELF_AUDIT.md",
+      "bytes": 12993
+    },
+    {
+      "path": "audits/BIB_FINAL_STRUCTURE_SELF_AUDIT.md",
+      "bytes": 4900
+    },
+    {
+      "path": "audits/BIB_REVIEWER_RISK_AUDIT.md",
+      "bytes": 7736
+    },
+    {
+      "path": "audits/BIB_STYLE_AND_SUBMISSION_WRITING_GUIDE.md",
+      "bytes": 19022
+    },
+    {
+      "path": "audits/DATA_AND_CODE_AVAILABILITY_PLAN.md",
+      "bytes": 9555
+    },
+    {
+      "path": "audits/DATA_SOURCES_AND_CITATIONS.md",
+      "bytes": 7321
+    },
+    {
+      "path": "audits/SCI_FIGURE_REDESIGN_PLAN.md",
+      "bytes": 6919
+    },
+    {
+      "path": "exports/RiceGeneFormer_BIB_final_EN.docx",
+      "bytes": 766949
+    },
+    {
+      "path": "exports/RiceGeneFormer_BIB_final_EN.pdf",
+      "bytes": 932656
+    },
+    {
+      "path": "exports/RiceGeneFormer_BIB_final_ZH.docx",
+      "bytes": 767685
+    },
+    {
+      "path": "exports/RiceGeneFormer_BIB_final_ZH.pdf",
+      "bytes": 939652
+    },
+    {
+      "path": "figures/fig1_sci_benchmark_design.pdf",
+      "bytes": 32775
+    },
+    {
+      "path": "figures/fig1_sci_benchmark_design.png",
+      "bytes": 101725
+    },
+    {
+      "path": "figures/fig1_sci_benchmark_design.svg",
+      "bytes": 36718
+    },
+    {
+      "path": "figures/fig1_sci_benchmark_design.tiff",
+      "bytes": 558350
+    },
+    {
+      "path": "figures/fig2_sci_architecture_evidence.pdf",
+      "bytes": 23683
+    },
+    {
+      "path": "figures/fig2_sci_architecture_evidence.png",
+      "bytes": 62051
+    },
+    {
+      "path": "figures/fig2_sci_architecture_evidence.svg",
+      "bytes": 25915
+    },
+    {
+      "path": "figures/fig2_sci_architecture_evidence.tiff",
+      "bytes": 306386
+    },
+    {
+      "path": "figures/fig3_sci_main_benchmark.pdf",
+      "bytes": 29539
+    },
+    {
+      "path": "figures/fig3_sci_main_benchmark.png",
+      "bytes": 90044
+    },
+    {
+      "path": "figures/fig3_sci_main_benchmark.svg",
+      "bytes": 38235
+    },
+    {
+      "path": "figures/fig3_sci_main_benchmark.tiff",
+      "bytes": 469920
+    },
+    {
+      "path": "figures/fig4_sci_hard_trait_diagnostics.pdf",
+      "bytes": 26727
+    },
+    {
+      "path": "figures/fig4_sci_hard_trait_diagnostics.png",
+      "bytes": 114686
+    },
+    {
+      "path": "figures/fig4_sci_hard_trait_diagnostics.svg",
+      "bytes": 51453
+    },
+    {
+      "path": "figures/fig4_sci_hard_trait_diagnostics.tiff",
+      "bytes": 710366
+    },
+    {
+      "path": "figures/fig5_sci_cross_region_boundary.pdf",
+      "bytes": 26286
+    },
+    {
+      "path": "figures/fig5_sci_cross_region_boundary.png",
+      "bytes": 125138
+    },
+    {
+      "path": "figures/fig5_sci_cross_region_boundary.svg",
+      "bytes": 31289
+    },
+    {
+      "path": "figures/fig5_sci_cross_region_boundary.tiff",
+      "bytes": 635164
+    },
+    {
+      "path": "figures/fig6_sci_ablation_boundaries.pdf",
+      "bytes": 26140
+    },
+    {
+      "path": "figures/fig6_sci_ablation_boundaries.png",
+      "bytes": 64993
+    },
+    {
+      "path": "figures/fig6_sci_ablation_boundaries.svg",
+      "bytes": 23322
+    },
+    {
+      "path": "figures/fig6_sci_ablation_boundaries.tiff",
+      "bytes": 327914
+    },
+    {
+      "path": "figures/fig7_sci_gene_attention_audit.pdf",
+      "bytes": 53875
+    },
+    {
+      "path": "figures/fig7_sci_gene_attention_audit.png",
+      "bytes": 236052
+    },
+    {
+      "path": "figures/fig7_sci_gene_attention_audit.svg",
+      "bytes": 153763
+    },
+    {
+      "path": "figures/fig7_sci_gene_attention_audit.tiff",
+      "bytes": 1206656
+    },
+    {
+      "path": "manuscripts/RiceGeneFormer_BIB_final_EN.md",
+      "bytes": 36658
+    },
+    {
+      "path": "manuscripts/RiceGeneFormer_BIB_final_ZH.md",
+      "bytes": 32344
+    },
+    {
+      "path": "source_data/README.md",
+      "bytes": 4295
+    },
+    {
+      "path": "source_data/SOURCE_DATA_MANIFEST.json",
+      "bytes": 1672
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/README.md",
+      "bytes": 1281
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/SCI_R_FIGURE_MANIFEST.csv",
+      "bytes": 769
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig1_leakage_matrix.csv",
+      "bytes": 540
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig1_trait_imbalance.csv",
+      "bytes": 449
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig2_design_choice_utility.csv",
+      "bytes": 121
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig2_graph_ablation.csv",
+      "bytes": 74
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig3_main_performance.csv",
+      "bytes": 603
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig3_metric_rank.csv",
+      "bytes": 466
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig4_per_trait_method_matrix.csv",
+      "bytes": 8707
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig4_trait_diagnostics.csv",
+      "bytes": 995
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig5_cross_region_all_methods.csv",
+      "bytes": 3349
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig5_ricegeneformer_gap_to_best.csv",
+      "bytes": 960
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig6_distillation.csv",
+      "bytes": 134
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig6_graph_ablation.csv",
+      "bytes": 74
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig6_gwas_top2048_tile.csv",
+      "bytes": 138
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig6_mapping_ablation.csv",
+      "bytes": 90
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig7_known_gene_audit_matrix.csv",
+      "bytes": 724
+    },
+    {
+      "path": "source_data/figure_source_data_sci_r/fig7_top_attention_genes.csv",
+      "bytes": 9185
+    },
+    {
+      "path": "source_data/gene_attention_w010_aggregate_manifest.json",
+      "bytes": 1073
+    },
+    {
+      "path": "source_data/gene_attention_w010_top200_aggregate.tsv",
+      "bytes": 293754
+    },
+    {
+      "path": "source_data/gwas_top2048_graph_manifest.json",
+      "bytes": 456
+    },
+    {
+      "path": "source_data/gwas_top2048_seed42_evaluation_manifest.json",
+      "bytes": 1902
+    },
+    {
+      "path": "source_data/known_gene_attention_ranks.tsv",
+      "bytes": 25168
+    },
+    {
+      "path": "source_data/known_gene_overlap_manifest.json",
+      "bytes": 425
+    },
+    {
+      "path": "source_data/region_shift_baseline_summary.tsv",
+      "bytes": 2281
+    },
+    {
+      "path": "source_data/region_shift_rice_geneformer_summary.tsv",
+      "bytes": 803
+    }
+  ]
+}

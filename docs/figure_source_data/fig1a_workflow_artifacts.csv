@@ -1,7 +1,0 @@
-step,detail
-3K Rice genotypes,"3,000 accessions; 365,710 SNPs"
-Descriptor phenotypes,35 traits; 10 core ordinal
-Leakage-safe split,"train/val/test; 1,586/340/340"
-Train-fold GWAS priors,"10 traits × 4 splits; 365,710 p-values"
-Gene-aware modeling,SNP-to-gene; + graph tokens
-Deterministic evaluation,full val/test; 3 seeds
