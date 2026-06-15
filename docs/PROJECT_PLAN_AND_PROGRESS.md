@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 20:25:31 CST
+最后更新：2026-06-15 21:10:20 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -360,6 +360,8 @@ baseline + ablation：2–5 天
 - [2026-06-15 19:57:15 CST] 已按用户授权在 PRSNet mamba 环境安装 R 作图栈：`r-base 4.5.3`、`r-ggplot2`、`r-patchwork`、`r-dplyr`、`r-tidyr`、`r-readr`、`r-ggrepel`、`r-scales`、`r-svglite`、`r-ragg`、`r-jsonlite`。随后运行 `scripts/figures/make_sci_bib_figures.R` 成功生成 7 张重新设计的 SCI/BIB R 图，每张均输出 SVG/PDF/TIFF/PNG 到 `docs/figures_sci_r/`，并生成 `docs/figure_source_data_sci_r/` 下 17 个 source-data CSV/manifest 文件。按独立代码复审意见修复了三类问题：Figure 7 known-gene audit 改为读取 `docs/source_data/known_gene_attention_ranks.tsv`，GWAS-top2048 macro-F1 不再静默 fallback，best RGF macro-F1 改为从主性能表派生，并加入输入列/manifest 行数校验；复审第二轮 `passed=true`、无 security_concerns / logic_errors。验证通过：Rscript 无绘图 warning、7×4 figure export 检查、source-data 检查、PNG 视觉 QA（Fig1/2/3/4/5/7）、`git diff --check`。
 
 - [2026-06-15 20:25:31 CST] Cron 例行复核 Phase 5 输入 smoke 与后续 GPU 提交条件：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 全部通过（`VALIDATION_OK`），关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 仍为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 正常；SLURM 仍不暴露 `gpu10` 分区（`sinfo` 仅 `cu/fat/q03/q04/q05/q07/q08`，`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），本轮 `ssh gpu10` 状态检查 25 秒超时，因此未启动新的 GPU smoke/训练。继续只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-15 21:10:20 CST] Cron 完成新 R 版 7 主图体系同步进最终投稿包：先复核 Phase 5 输入 smoke 作业 `8562921` 仍为 `COMPLETED|0:0|00:00:08`，manifest/report 继续通过（`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`）。随后修订本地打包脚本，使 `docs/final_submission_package_20260615/` 改用 `docs/figures_sci_r/` 的 7 张 SCI/BIB R 图，并复制 `docs/figure_source_data_sci_r/` 的轻量 source-data CSV；显式验证 full zip 包含高分辨率 SCI 图，lite zip 仅保留 SVG/文本/CSV。为打包补装 PRSNet 环境依赖 `python-docx`、`pypdf`、`reportlab` 后重跑成功：完整包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615.zip` 为 9.1 MB，轻量包 `docs/RiceGeneFormer_BIB_final_submission_package_20260615_LITE.zip` 为 4.1 MB；`PACKAGE_MANIFEST.json` 检查项 `claim_boundary_frozen`、`sci_figures_copied`、`sci_figure_source_data_copied` 均为 true。代码侧已通过 `py_compile`、`git diff --check`、静态安全扫描和独立复审；未上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
