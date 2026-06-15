@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 17:28:24 CST
+最后更新：2026-06-15 17:46:50 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -351,3 +351,4 @@ baseline + ablation：2–5 天
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
 4. `docs/MANUSCRIPT_BIB_FULL_EN.md` 与 `docs/MANUSCRIPT_BIB_FULL_ZH.md` 已形成接近投稿级主稿；下一步应准备 DOI-backed GitHub/Zenodo release/tag，完成 reference style / DOI / repository accession 后重复 overclaim scan，并决定是否将英文稿进一步扩展到 BIB 指南建议的 7,000-8,000 word 主文长度。
+- [2026-06-15 17:46:50 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 验证通过：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境 PyTorch 为 `2.6.0+cu124`，登录节点无 GPU 所以 `cuda_available=False` 正常；本轮未新增训练或数据产物。继续保持 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
