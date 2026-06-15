@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-15 17:46:50 CST
+最后更新：2026-06-15 18:26:52 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -349,9 +349,14 @@ baseline + ablation：2–5 天
 
 - [2026-06-15 18:04:13 CST] 将 BIB manuscript 包装为最终版交付包：新增并独立复审通过 `scripts/export_final_bib_package.py`，使用 allowlist 只复制轻量 `docs/source_data/` 文件，导出英文/中文 DOCX 与 PDF，并生成 `docs/final_submission_package_20260615/`（含 `manuscripts/`、`exports/`、`figures/`、`source_data/`、`audits/`、`PACKAGE_MANIFEST.json`、`README_FINAL_PACKAGE.md`）。同时生成完整 zip `docs/RiceGeneFormer_BIB_final_submission_package_20260615.zip`（含 TIFF/PDF/PNG/SVG 全图，约 321.7 MB）和轻量 zip `docs/RiceGeneFormer_BIB_final_submission_package_20260615_LITE.zip`（跳过高分辨率 TIFF/figure-PDF，约 4.4 MB）。验证通过：`git diff --check`、DOCX zip 结构 `word/document.xml`、PDF 页数（英文 11 页、中文 9 页）、导出内容 sentinel、package manifest/checklist、source-data manifest、完整/轻量 zip 存在性与大小检查均通过；代码复审第二轮 passed=true，无 security_concerns / logic_errors。剩余投稿前事项仍是 DOI-backed release、正式参考文献格式和第三方数据再分发许可确认。
 
+- [2026-06-15 18:20:00 CST] 按用户反馈重新设计 SCI/BIB 图表体系：新增 `docs/SCI_FIGURE_REDESIGN_PLAN.md`，将原 4 张偏 slide/示意图的图组扩展为 7 张主图 + 4 张补图的 source-data-driven 体系，包括 benchmark/leakage 设计、RiceGeneFormer 架构、主性能、hard-trait/ordinal diagnostics、cross-region boundary、ablation boundary、gene-attention interpretation audit。新增 R-only 作图脚本 `scripts/figures/make_sci_bib_figures.R`，使用 ggplot2/patchwork/ggrepel/svglite/ragg，从 `docs/figure_source_data/` 和 `docs/source_data/` 读取真实结果，导出 SVG/PDF/TIFF/PNG 到 `docs/figures_sci_r/`，并输出对应 source-data CSV 到 `docs/figure_source_data_sci_r/`；新增 `docs/figure_source_data_sci_r/README.md` 规定每张图必须有 source data、统一颜色、禁止 SOTA/robustness/biological-validation 过度表述。当前环境执行 `Rscript scripts/figures/make_sci_bib_figures.R` 返回 `Rscript: command not found`，所以尚不能在本机渲染最终 R 图；`git diff --check` 已通过。
+
+- [2026-06-15 18:26:52 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；已验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过，关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。`PRSNet` 环境可导入 PyTorch `2.6.0+cu124`（CUDA build 12.4，登录节点 `cuda_available=False` 正常）；`scripts/model/rice_geneformer_omtl_smoke.py` 与 `scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 已通过 `py_compile`/`sh -n`、静态安全扫描和独立复审（passed=true，无 security_concerns / logic_errors），准备进入短 GPU smoke 提交流程。继续遵守 GitHub 只同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制产物。
+
 ## 8. 下一步执行优先级
 
 1. cross-region deterministic benchmark 与当前 gene-attention/known-gene 初审均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
 2. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；alpha `0.4` 更平衡（accuracy/MAE 更优），alpha `0.6` 更偏 macro-F1，后续若继续 baseline 线应做校准/置信区间，而不是只追单 seed 峰值。
 3. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
-4. `docs/final_submission_package_20260615/` 已形成最终版 BIB 交付包；下一步应准备 DOI-backed GitHub/Zenodo release/tag，完成 reference style / DOI / repository accession 后重复 overclaim scan。
+4. 当前图表需替换为 `docs/SCI_FIGURE_REDESIGN_PLAN.md` 中的 7 主图体系；R 脚本已准备好，但当前环境缺少 `Rscript`，需在 R 环境安装后运行 `scripts/figures/make_sci_bib_figures.R` 生成最终 SVG/PDF/TIFF/PNG。
+5. `docs/final_submission_package_20260615/` 已形成最终版 BIB 交付包；下一步应在新图生成后重打包，并准备 DOI-backed GitHub/Zenodo release/tag，完成 reference style / DOI / repository accession 后重复 overclaim scan。
