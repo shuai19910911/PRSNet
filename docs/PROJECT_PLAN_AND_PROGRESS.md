@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-16 13:49:27 CST
+最后更新：2026-06-16 14:26:23 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -428,6 +428,8 @@ baseline + ablation：2–5 天
 - [2026-06-16 13:27:09 CST] Cron 复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键验收为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 复核为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；现有最小 RiceGeneFormer-OMTL GPU smoke 产物继续验证为 `status=ok`、`device=cuda`、`batch_size=4`、`genes_used=256`、`graph_edges_used=2530`、`logit_shape=4x35`。当前仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 - [2026-06-16 13:49:27 CST] Cron 复核 Phase 5 输入 smoke与最小 OMTL 准备状态：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 再次验证通过（`VALIDATION_OK`）：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；`rice_geneformer_omtl_smoke.py` 与 `rice_geneformer_omtl_train.py` 通过 `py_compile`，GPU smoke wrapper 通过 `sh -n`，CPU 最小 smoke 复跑 `status=ok`、`logit_shape=2x35`、loss `4.3270978927612305`、grad_norm `19.877815208770713`、`graph_edges_used=290`。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），因此本轮未提交 GPU smoke/训练；仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
+
+- [2026-06-16 14:26:23 CST] Cron 复核并补强最小 RiceGeneFormer-OMTL smoke/training 安全门：`sacct` 仍确认为输入 smoke 作业 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`，`squeue` 中已无活动作业；manifest/report 脚本化验证 `VALIDATION_OK`，关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 复核为 `2.6.0+cu124`、CUDA build `12.4`；按独立复审意见在本地最小 OMTL smoke/train 代码中补充 `mask_multitask.npy` finite/binary fail-closed 校验、checkpoint_last 保存后再写 manifest 且记录 best/last checkpoint bytes，并加固 GPU smoke wrapper：清洁 `LD_LIBRARY_PATH`，SLURM 下要求 `SLURM_JOB_GPUS=0`，直接运行时仅允许 `gpu10` 且必须看到物理 GPU0。验证通过：`py_compile`、`sh -n`、静态安全扫描、CPU smoke、CPU 1-epoch train/checkpoint JSON 检查、`git diff --check` 与独立复审第二轮 `passed=true`。SLURM 仍不暴露 `gpu10` 分区；`ssh gpu10` 可达但物理 GPU0 约 `35.5/40 GB` 已用，当前 fail-closed wrapper 绑定 GPU0，因此未启动新的 GPU smoke。本轮仅同步 docs 轻量进展，不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 ## 8. 下一步执行优先级
 
