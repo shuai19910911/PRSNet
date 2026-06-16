@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-16 10:31:59 CST
+最后更新：2026-06-16 11:22:59 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -419,10 +419,12 @@ baseline + ablation：2–5 天
 
 - [2026-06-16 10:31:59 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py` 与 GPU smoke wrapper 本轮 `py_compile`/`sh -n` 通过。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），`ssh gpu10` 可达且 GPU7 空闲，但 smoke wrapper fail-closed 绑定物理 GPU0，GPU0 约 `35.5/40 GB` 已用，因此未启动新的 GPU smoke/训练。本轮仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
+- [2026-06-16 11:22:59 CST] 按用户要求继续优化预测结果直到超过现有基线：先复核当前 leaderboard，最强单模型为 SNP-MLP alpha `0.60` seed44 test macro-F1 `0.380175`，最佳 RiceGeneFormer test macro-F1 仍约 `0.333186`，差距明确。选择最快可验证且不引入 train/test 泄漏的优化路线：用已存在/新导出的 SNP-MLP alpha `0.60` seeds `42/43/44` 概率预测做 validation-tuned seed ensemble；权重只在 validation role 上选择，test labels 只在权重冻结后报告。新增本地脚本 `scripts/model/ensemble_snp_mlp_predictions.py`，并用 `opt_snp_mlp_alpha060_seed42/43/44_export_20260616` 生成/读取 `teacher_predictions_val.npz` 与 `teacher_predictions_test.npz`。最终主指标采用 per-trait validation-tuned ensemble：test macro-F1 `0.3950466669`，高于最强单模型 baseline `0.3801751159`，提升 `+0.0148715510`；均匀平均 ensemble 也达到 `0.3857627503`，全局权重 ensemble 为 `0.3855397065`。验证通过：`py_compile`、静态安全扫描、完整脚本复跑、split role exact-match 检查、label/mask/probability/class-count fail-closed 检查、独立代码复审第二轮 `passed=true` 且无 security_concerns / logic_errors。本轮优化为 CPU 后处理/集成，不需要 GPU；本地数据与预测产物仍在 `data/3krice/processed/` 下，不上传 GitHub。解释边界：这证明“当前可交付预测系统”已超过既有单模型基线，但 RiceGeneFormer 单模型本身仍未超过 SNP-MLP，需要在文稿中明确区分 ensemble predictor 与 RiceGeneFormer diagnostic model。
+
 ## 8. 下一步执行优先级
 
 1. 当前 BIB/SCI 图表体系已替换为 R 版 7 主图，并已同步进 `docs/final_submission_package_20260615/`；完整包和轻量包均已重打包验证。
 2. cross-region deterministic benchmark 与 gene-attention/known-gene 审核均不支持 NC 级正向发现；Nature Communications 暂不作为当前稿件主目标，除非后续引入正式 QTL 数据库或外部数据泛化。
-3. SNP-MLP class-balanced alpha `0.4/0.5/0.6` 多 seed 已完成，macro-F1 均值约 `0.350/0.346/0.354`，整体仍强于当前 RiceGeneFormer；投稿主文需诚实报告该 baseline gap。
+3. 新增 validation-tuned SNP-MLP seed ensemble 后，当前最佳可交付预测系统 test macro-F1 为 `0.3950466669`，已超过最强单模型 baseline `0.3801751159`；投稿表述必须明确这是 ensemble predictor，而不是 RiceGeneFormer 单模型性能。
 4. 已完成 `max_snps_per_gene=16/32/64/128` 与 SNP-to-gene mapping body-only/±2kb/±5kb/±10kb/nearest 的 seed42 对齐消融；两条线均近似持平，暂不作为主瓶颈继续深挖。
 5. 下一步优先做 DOI-backed GitHub/Zenodo release/tag、正式 reference style / repository accession / third-party data license 核对，并在提交前重复 overclaim scan；继续避免上传 raw data、日志、脚本、配置、权重或二进制训练产物。
