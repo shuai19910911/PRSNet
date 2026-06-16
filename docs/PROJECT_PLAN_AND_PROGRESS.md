@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-16 17:33:04 CST
+最后更新：2026-06-16 18:22:00 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -445,6 +445,8 @@ baseline + ablation：2–5 天
 
 - [2026-06-16 17:10:49 CST] Cron 例行复核 Phase 5 输入 smoke 与最小 OMTL 准备状态：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验证 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键验收仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 复核为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py`、`ricegate_trait_moe_ensemble.py` 通过 `py_compile`，GPU smoke wrapper 通过 `sh -n`，`git diff --check` 与静态安全扫描无新增问题；CPU 最小 smoke 复跑 `status=ok`、`logit_shape=2x35`、loss `4.3270978927612305`、`grad_norm=19.877815208770713`、`graph_edges_used=290`。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`）；`ssh gpu10` 可达，但当前 fail-closed wrapper 仅允许物理 GPU0，而 GPU0 约 `35.5/40 GB` 已用且利用率 `100%`，因此本轮未启动新的 GPU smoke/训练。仅同步 docs 轻量进展；数据、日志、脚本、配置、权重和二进制训练产物继续不上传 GitHub。
 - [2026-06-16 17:33:04 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验收继续通过（`VALIDATION_OK`）：`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；将两个轻量最终模型比较文档加入待同步 docs，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
+
+- [2026-06-16 18:22:00 CST] Cron 完成 Phase 5 输入 smoke 复核与最小 OMTL 代码门禁补强：`squeue -j 8562921` 仍无活动作业（`Invalid job id specified`），`sacct` 返回 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 复核 `VALIDATION_OK`，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。PRSNet 环境验证为 PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；本地最小 smoke/train 代码补强了 genotype code 0/1/2/3 fail-closed 校验、smoke `np.load(..., allow_pickle=False)`、distillation manifest strict JSON/teacher range checks，随后 `py_compile`、SLURM wrapper `sh -n`、`git diff --check`、静态安全扫描、CPU smoke（`logit_shape=2x35`、loss `4.3324`、`graph_edges_used=290`）、CPU 1-epoch train smoke（checkpoint_best/last 非空）和独立代码复审均通过。SLURM 仍不暴露 `gpu10` 分区，`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`；`ssh gpu10` 可达但物理 GPU0 约 `35.5/40 GB` 已用且利用率 `100%`，当前 fail-closed wrapper 仅允许 GPU0，因此本轮未启动新的 GPU smoke/训练。仅同步 docs 轻量进展；数据、日志、脚本、配置、权重和二进制训练产物继续不上传 GitHub。
 
 ## 8. 下一步执行优先级
 
