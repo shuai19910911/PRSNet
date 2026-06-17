@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-17 09:27:52 CST
+最后更新：2026-06-17 09:45:42 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -497,6 +497,8 @@ baseline + ablation：2–5 天
 - [2026-06-17 09:09:14 CST] Cron 完成 Phase 5 输入 smoke 复核并追加最小 OMTL CUDA smoke：`squeue -j 8562921` 仍无活动作业，`sacct` 确认为 `COMPLETED|0:0|00:00:08`；manifest/report 再次验证 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`；`py_compile`、GPU wrapper `sh -n` 与静态安全扫描均通过。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 返回 `invalid partition specified`），因此通过 `ssh gpu10` 在物理 GPU0 上直接运行极小 CUDA smoke；输出 `GPU_SMOKE_VALIDATION_OK`：`status=ok`、`device=cuda`、`batch_size=4`、`genes_used=256`、`graph_edges_used=2530`、`logit_shape=4x35`、loss `5.021676063537598`、`grad_norm=30.57836163750389`。新产物仅在本地数据区 `data/3krice/processed/rice_geneformer_omtl_smoke_gpu0_cron_20260617_0903/`；GitHub 只同步本 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 - [2026-06-17 09:27:52 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验收 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 通过（`VALIDATION_OK`），关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练或数据产物；GitHub 仅同步本 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制训练产物。
+
+- [2026-06-17 09:45:42 CST] Cron 复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 验证通过（`VALIDATION_OK`），关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮没有新增训练或数据产物；继续仅同步 docs 轻量进展到 GitHub，不上传数据、日志、脚本、配置、权重或二进制训练产物。
 
 ## 8. 下一步执行优先级
 
