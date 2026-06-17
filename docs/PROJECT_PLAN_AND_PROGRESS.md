@@ -566,6 +566,8 @@ baseline + ablation：2–5 天
 
 - [2026-06-18 02:12:07 CST] Cron 复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验收 `VALIDATION_OK`，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。本轮未新增训练、数据或代码产物；按项目约束仅同步本 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
+- [2026-06-18 02:50:38 CST] Cron 复核 Phase 5 输入 smoke 与 GPU 条件：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认为 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；manifest/report 脚本化验收通过（`status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`）。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`，登录节点 `cuda_available=False` 属正常；`py_compile`、GPU wrapper `sh -n`、`git diff --check` 通过。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`）；`ssh gpu10` 可达但 8 张 A100 全部高负载，物理 GPU0 `38817/40960 MiB` 且利用率 `99%`，因此本轮未启动新的 GPU smoke/训练以避免干扰他人作业。GitHub 仅同步本 docs 轻量进展；继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
 ## 8. 下一步执行优先级
 
 1. 当前 BIB/SCI 图表体系已替换为 R 版 7 主图，并已同步进 `docs/final_submission_package_20260615/`；完整包和轻量包均已重打包验证。
