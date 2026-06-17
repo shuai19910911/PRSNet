@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-17 12:51:51 CST
+最后更新：2026-06-17 13:12:39 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -513,6 +513,8 @@ baseline + ablation：2–5 天
 - [2026-06-17 12:32:08 CST] Cron 完成 Phase 5 输入 smoke 复核、最小 OMTL 代码门禁修复与 GPU smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；`model_input_smoke_manifest.json`/report 脚本化验收 `VALIDATION_OK`，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。PRSNet 环境 PyTorch 为 `2.6.0+cu124`、CUDA build `12.4`；本地最小 OMTL smoke/train 脚本补强了 `--out-dir` 限制在 `processed_dir` 下、`gene2snps.json` strict JSON 读取、`lr/weight_decay` 和 `class_logits` finite 检查，GPU wrapper 补强 gpu10/物理 GPU0 fail-closed 校验。验证通过：`py_compile`、`sh -n`、`git diff --check`、静态安全扫描、CPU smoke（`logit_shape=2x35`、loss `4.29594612121582`、`grad_norm=19.648844424635506`、`graph_edges_used=610`）、CPU 1-epoch train smoke（`best_val_loss=0.717245876789093`、checkpoint best/last 非空）和独立复审第二轮 `passed=true`。SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`），但 `ssh gpu10` 可达且 GPU0 空闲，因此直接运行极小 CUDA smoke 成功：manifest `GPU_SMOKE_VALIDATION_OK`，`device=cuda`、`batch_size=4`、`genes_used=256`、`graph_edges_used=2530`、`logit_shape=4x35`、loss `5.021676063537598`、`grad_norm=30.57836163750389`。新数据/日志/脚本/配置/权重/二进制产物仅保留本地不上传；GitHub 只同步本 docs 轻量进展。
 
 - [2026-06-17 12:51:51 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验收 `VALIDATION_OK`，关键值仍为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。本轮未新增训练、数据或代码产物；继续只同步本 docs 轻量进展，数据、日志、脚本、配置、权重和二进制产物不上传 GitHub。
+
+- [2026-06-17 13:12:39 CST] Cron 例行复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch MaxRSS `1136K`；脚本化验收 `model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 均通过（`VALIDATION_OK`），关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前工作区在复核前为 clean；本轮未新增训练、数据或代码产物，仅同步本 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
