@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-19 16:12:56 CST
+最后更新：2026-06-19 19:46:18 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -689,6 +689,8 @@ baseline + ablation：2–5 天
 - [2026-06-19 15:15:19 CST] Cron 复核 Phase 5 输入 smoke与文档同步：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 脚本化验收 `VALIDATION_OK`，关键值继续为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。PRSNet 环境继续为 Python `3.10.20`、PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；`model_input_smoke.py`、`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py` 通过 `py_compile`，两个 smoke SLURM wrapper 通过 `sh -n`，docs diff `git diff --check` 通过。本轮仅把 `docs/fivetrait_prsnet2_paper_aligned_comparison_20260619.md` 更新为包含 RiceGraphOrdinalNet 的 PRSNet-2 paper-aligned 主文对照表，并同步本进展文档；没有新增训练、数据、脚本、配置、日志、权重或二进制产物。
 
 - [2026-06-19 16:12:56 CST] Cron 复核 Phase 5 输入 smoke 并推进最小 GPU smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch `MaxRSS=1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验收 `VALIDATION_OK`，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、split train/val/test=`1586/340/340`。PRSNet 环境 PyTorch 验证为 `2.6.0+cu124`；`scripts/model/rice_geneformer_omtl_smoke.py` 与 `scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh` 通过 `py_compile`、`sh -n`、`git diff --check`、静态扫描和独立 reviewer（`passed=true`）。SLURM 当前未暴露 `gpu10` 分区/节点，改用可达 `ssh gpu10` 上空闲 GPU5 执行短 CUDA smoke，输出 `data/3krice/processed/rice_geneformer_omtl_smoke_gpu5_cron_20260619_161010/`；manifest 显示 `status=ok`、`device=cuda`、`cuda_available=true`、`genes_used=256`、`graph_edges_used=2530`、`logit_shape=4x35`、`loss=4.96895694732666`、`grad_norm=30.23212246204704`，运行后 GPU5 显存回到 `0/40960 MiB`。
+
+- [2026-06-19 19:46:18 CST] Cron 复核 Phase 5 输入 smoke 与 GPU 启动门禁：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认原作业 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 再次严格验收通过（19 项检查、0 failed），关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test=`1586/340/340`。当前 SLURM 仍不暴露 `gpu10` 分区（`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`）；`ssh gpu10` 可达，但 8 张 A100 均在高负载/高显存占用状态（例如 GPU0/1 `39291/40960 MiB`、GPU5 `27659/40960 MiB`，利用率约 `96–100%`），因此本轮未启动新的 CUDA smoke 以避免干扰他人作业。GitHub 仅同步本 docs 轻量进展；未上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
