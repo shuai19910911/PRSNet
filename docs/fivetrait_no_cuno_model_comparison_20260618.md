@@ -2,6 +2,8 @@
 
 Date（日期）: 2026-06-18
 
+Status（状态）: exploratory internal table（内部探索表）. Main manuscript comparison（主文比较表）已改用 PRSNet-2-paper-aligned（对齐 PRSNet-2 原文风格）版本：`docs/fivetrait_prsnet2_paper_aligned_comparison_20260619.md`。ExtraTrees（极端随机树）和 RandomForest（随机森林）不进入主文主比较表。
+
 保留性状 / Included traits: CUDI_CODE_REPRO, LLT_CODE, PLT_CODE_POST, SDHT_CODE, PTH
 
 说明 / Note: Pearson/PCC（皮尔逊相关）和 Spearman（斯皮尔曼相关）均基于 expected ordinal score（期望序数分数），不是 hard class（硬类别）编号；pooled PCC（混合标签皮尔逊相关）是辅助指标，因为不同性状类别范围不同。Majority baseline（多数类基线）的各性状预测为常数，所以 mean PCC（各性状平均皮尔逊相关）记为 NA。
