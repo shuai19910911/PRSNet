@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-19 23:43:06 CST
+最后更新：2026-06-20 00:11:58 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -703,6 +703,8 @@ baseline + ablation：2–5 天
 - [2026-06-19 23:05:58 CST] Cron 复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch `MaxRSS=1136K`；manifest/report 脚本化验收 `VALIDATION_OK`，关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。PRSNet 环境复核为 Python `3.10.20`、PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；`model_input_smoke.py`、`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py` 通过 `py_compile`，`model_input_smoke.sh` 与 `rice_geneformer_omtl_gpu_smoke.sh` 通过 `sh -n`，`git diff --check` 与 diff 静态扫描通过。SLURM 仍不暴露 `gpu10`（`sinfo -p gpu10` 无节点，`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`）；本轮未新增代码/训练/数据产物，未启动新的 GPU smoke；GitHub 仅同步本 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-19 23:43:06 CST] Cron 复核 Phase 5 输入 smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch `MaxRSS=1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 脚本化验收 `VALIDATION_OK`，关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。PRSNet 环境验证为 Python `3.10.20`、PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；`model_input_smoke.py`、`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py` 通过 `py_compile`，`model_input_smoke.sh` 与 `rice_geneformer_omtl_gpu_smoke.sh` 通过 `sh -n`。GPU smoke 本轮未启动：SLURM 仍不暴露 `gpu10`（`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`），`ssh gpu10` 可查询到 8 张 A100，但全部处于高负载/高显存占用（GPU0/1 `39291/40960 MiB` 且 util `100%`，GPU5 `28812/40960 MiB` 且 util `92%` 等），因此未直接运行新的 CUDA smoke以避免干扰他人作业。GitHub 仅同步本 docs 轻量进展；继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-20 00:11:58 CST] Cron 复核 Phase 5 输入 smoke 与 GPU 启动门禁：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认原作业 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；manifest/report 脚本化验收 `VALIDATION_OK`，关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`，10 个 core-trait GWAS p-value row 均为 shape `365710`。PRSNet 环境验证为 Python `3.10.20`、PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；`model_input_smoke.py`、`rice_geneformer_omtl_smoke.py`、`rice_geneformer_omtl_train.py` 通过 `py_compile`，两个 smoke SLURM wrapper 通过 `sh -n`，`git diff --check` 与静态扫描通过，独立代码复审 `passed=true` 且无 security/logic blockers（仅 non-blocking hardening 建议）。GPU smoke 本轮未启动：SLURM 仍不暴露 `gpu10`（`sinfo -p gpu10` 无节点，`sbatch --test-only -p gpu10 ...` 为 `invalid partition specified`），`ssh gpu10`/`nvidia-smi` 查询 45 秒超时并被终止（`Killed by signal 15`），无法安全确认空闲 GPU。GitHub 仅同步本 docs 轻量进展；继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
