@@ -1,6 +1,6 @@
 # RiceGeneFormer 水稻 3K Genome 正式研究计划与进展
 
-最后更新：2026-06-22 14:26:35 CST
+最后更新：2026-06-22 14:45:51 CST
 
 > 本文件是项目唯一主进展文件。后续每完成一个小阶段，只更新本文件中的“阶段进展记录”和必要计划状态，不新增零散进展文件。
 
@@ -908,6 +908,8 @@ baseline + ablation：2–5 天
 - [2026-06-22 14:08:11 CST] Cron 复核 Phase 5 model-input smoke、环境门禁并在空闲 GPU2 上重跑最小 CUDA smoke：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；程序化验收 `MODEL_INPUT_SMOKE_VALIDATION_OK checks=28`，关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`，10 个 core-trait GWAS p-value 文件存在且 shape 均为 `365710`。PRSNet 环境验证为 Python `3.10.20`、PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；三个 Python 入口通过 `py_compile`，两个 wrapper 通过 `sh -n`，`git diff --check` 与 5 文件静态安全扫描通过。SLURM 仍不暴露 GPU 分区/GRES（`gpu10` invalid partition、`cu -w gpu10` invalid node），但 `ssh gpu10` 查询到 GPU2/GPU6/GPU7 空闲（`0/40960 MiB`、util `0%`），因此通过 fail-closed direct wrapper 在物理 GPU2 运行 `RICEGENEFORMER_GPU_INDEX=2 sh scripts/slurm/rice_geneformer_omtl_gpu_smoke.sh`；输出 `status=ok`、`device=cuda`、authorized GPU index `2`、UUID `GPU-204fa614-adef-be3b-58f4-d982619f0131`、`logit_shape=4x35`、`genes_used=256`、`graph_edges_used=2530`、loss `4.96895694732666`、`grad_norm=30.232122280662907`，manifest/report 写入本地数据区 `data/3krice/processed/rice_geneformer_omtl_smoke/` 并通过字段校验。本轮仅更新并同步 docs 轻量进展；继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 - [2026-06-22 14:26:35 CST] Cron 例行复核 Phase 5 model-input smoke：`squeue -j 8562921` 返回 `Invalid job id specified`（队列中无活动作业），`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`、batch `MaxRSS=1136K`；`model_input_smoke_manifest.json` 与 `model_input_smoke_report.tsv` 逐项验收通过，关键值为 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`。本轮未新增代码或训练作业；PRSNet CUDA PyTorch 与最小 CUDA smoke 已在上一轮确认可用，当前仅同步 docs 轻量进展，继续不上传数据、日志、脚本、配置、权重或二进制产物。
+
+- [2026-06-22 14:45:51 CST] Cron 复核 Phase 5 model-input smoke 与当前 GPU 门禁：`squeue -j 8562921` 返回 `Invalid job id specified`，`sacct` 确认 `8562921|rgf_input_smoke|cu|COMPLETED|0:0|00:00:08`；程序化验收 `MODEL_INPUT_SMOKE_VALIDATION_OK checks=21`，关键值保持 `status=ok`、`X=3000x365710`、`Y/mask=3000x35`、`core_traits=10`、`graph_nodes=34139`、`graph_directed_edges=341030`、random split train/val/test/unused=`1586/340/340/734`，10 个 core-trait GWAS p-value shape 均为 `365710`。PRSNet 环境仍为 PyTorch `2.6.0+cu124`、CUDA build `12.4`（登录节点 `cuda_available=False` 正常）；三个 Python 入口、两个 smoke wrapper、`git diff --check` 均通过。本轮未新增代码；`ssh gpu10` 可查询但 8 张 A100-40G 均被占用（GPU0/1 `39291/40960 MiB`、GPU2/6/7 `21729/40960 MiB`、GPU3 `34686/40960 MiB`、GPU4 `14142/40960 MiB`、GPU5 `40289/40960 MiB`，util `74–100%`），因此未直接运行新的 CUDA smoke，以避免干扰共享节点。本轮仅同步 docs 轻量进展；继续不上传数据、日志、脚本、配置、权重或二进制产物。
 
 ## 8. 下一步执行优先级
 
